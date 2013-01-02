@@ -33,7 +33,7 @@
  *
  */
 
-#include "renderer.h"
+#include <object_recognition_renderer/renderer.h>
 
 #include <iostream>
 #include <stdlib.h>

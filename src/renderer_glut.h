@@ -39,7 +39,7 @@
 // Make sure we define that so that we have FBO enabled
 #define GL_GLEXT_PROTOTYPES
 
-#include "renderer.h"
+#include <object_recognition_renderer/renderer.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

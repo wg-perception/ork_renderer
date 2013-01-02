@@ -33,7 +33,7 @@
  *
  */
 
-#include "renderer_osmesa.h"
+#include <object_recognition_renderer/renderer_osmesa.h>
 
 #include <iostream>
 #include <stdlib.h>

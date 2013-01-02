@@ -51,24 +51,24 @@ INCLUDE_DIRECTORIES(SYSTEM ${GLUT_INCLUDE_DIR}
 )
 
 # add a glut version of the renderer
-add_library(object_recognition_reconstruction_renderer_glut model.cpp
-                                                            renderer.cpp
-                                                            renderer_glut.cpp
+add_library(${PROJECT_NAME}_glut model.cpp
+                                 renderer.cpp
+                                 renderer_glut.cpp
 )
-target_link_libraries(object_recognition_reconstruction_renderer_glut ${EXTRA_LIBRARIES}
-                                                                      ${OpenCV_LIBRARIES}
-                                                                      ${OPENGL_LIBRARIES}
-                                                                      ${GLUT_LIBRARIES}
-                                                                      freeimage
+target_link_libraries(${PROJECT_NAME}_glut ${EXTRA_LIBRARIES}
+                                           ${OpenCV_LIBRARIES}
+                                           ${OPENGL_LIBRARIES}
+                                           ${GLUT_LIBRARIES}
+                                           freeimage
 )
 
 # add an OSMesa version of the renderer
-add_library(${PROJECT_NAME}_renderer_osmesa model.cpp
+add_library(${PROJECT_NAME}_osmesa model.cpp
                                             renderer.cpp
                                             renderer_osmesa.cpp
 )
 
-target_link_libraries(${PROJECT_NAME}_renderer_osmesa ${EXTRA_LIBRARIES}
+target_link_libraries(${PROJECT_NAME}_osmesa ${EXTRA_LIBRARIES}
                                                       ${OpenCV_LIBRARIES}
                                                       OSMesa GLU
                                                       freeimage
@@ -90,9 +90,9 @@ SET_PROPERTY(TARGET view_generator PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX
 TARGET_LINK_LIBRARIES(view_generator ${EXTRA_LIBRARIES})
 
 if (${DO_GLUT})
-  target_link_libraries(view_generator ${PROJECT_NAME}_renderer_glut)
+  target_link_libraries(view_generator ${PROJECT_NAME}_glut)
 else()
-  target_link_libraries(view_generator ${PROJECT_NAME}_renderer_osmesa)
+  target_link_libraries(view_generator ${PROJECT_NAME}_osmesa)
 endif()
 
 SET_TARGET_PROPERTIES(view_generator PROPERTIES

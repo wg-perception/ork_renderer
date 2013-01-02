@@ -43,9 +43,9 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #if USE_RENDERER_GLUT
-#include "renderer_glut.h"
+#include <object_recognition_renderer/renderer_glut.h>
 #else
-#include "renderer_osmesa.h"
+#include <object_recognition_renderer/renderer_osmesa.h>
 #endif
 
 int
