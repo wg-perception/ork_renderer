@@ -4,10 +4,14 @@ project(object_recognition_renderer)
 find_package(catkin REQUIRED)
 
 if (${catkin_VERSION} VERSION_GREATER "0.5.28")
-catkin_package(INCLUDE_DIRS include)
+catkin_package(INCLUDE_DIRS include
+               LIBRARIES ${PROJECT_NAME}_osmesa
+)
 else()
 catkin_stack()
-catkin_project(object_recognition_reconstruction INCLUDE_DIRS include)
+catkin_project(object_recognition_reconstruction INCLUDE_DIRS include
+                                                 LIBRARIES ${PROJECT_NAME}_osmesa
+)
 endif()
 
 include_directories(include)

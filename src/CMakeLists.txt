@@ -1,15 +1,6 @@
 FIND_PACKAGE(OpenGL)
-FIND_PACKAGE(GLUT)
 
-IF ( NOT GLUT_FOUND )
-	IF ( MSVC )
-		SET ( GLUT_FOUND 1 )
-		SET ( GLUT_INCLUDE_DIR ${Assimp_SOURCE_DIR}/samples/glut/ )
-		SET ( GLUT_LIBRARIES ${Assimp_SOURCE_DIR}/samples/glut/glut32.lib )
-	ELSE ( MSVC )
-		MESSAGE( WARNING "Please install glut." )
-	ENDIF ( MSVC )
-ENDIF ( NOT GLUT_FOUND )
+set(DO_GLUT False)
 
 find_package(PkgConfig REQUIRED)
 find_package(ASSIMP QUIET)
@@ -41,7 +32,6 @@ endif()
 
 
 include_directories(BEFORE ${ASSIMP_INCLUDE_DIRS})
-#link_directories(${ASSIMP_LIBRARY_DIRS})
 
 find_package(OpenCV REQUIRED)
 
@@ -50,40 +40,37 @@ INCLUDE_DIRECTORIES(SYSTEM ${GLUT_INCLUDE_DIR}
                            ${OPENGL_INCLUDE_DIR}
 )
 
-# add a glut version of the renderer
-add_library(${PROJECT_NAME}_glut model.cpp
-                                 renderer.cpp
-                                 renderer_glut.cpp
-)
-target_link_libraries(${PROJECT_NAME}_glut ${EXTRA_LIBRARIES}
-                                           ${OpenCV_LIBRARIES}
-                                           ${OPENGL_LIBRARIES}
-                                           ${GLUT_LIBRARIES}
-                                           freeimage
-)
-
-# add an OSMesa version of the renderer
-add_library(${PROJECT_NAME}_osmesa model.cpp
-                                            renderer.cpp
-                                            renderer_osmesa.cpp
-)
-
-target_link_libraries(${PROJECT_NAME}_osmesa ${EXTRA_LIBRARIES}
-                                                      ${OpenCV_LIBRARIES}
-                                                      OSMesa GLU
-                                                      freeimage
-)
-
-
-set(DO_GLUT False)
 if (${DO_GLUT})
-  add_definition(-DUSE_RENDERER_GLUT=1)
+  add_definitions(-DUSE_RENDERER_GLUT=1)
+
+  # add a glut version of the renderer
+  add_library(${PROJECT_NAME}_glut model.cpp
+                                   renderer.cpp
+                                   renderer_glut.cpp
+                                   ${EXTRA_SOURCES}
+  )
+  target_link_libraries(${PROJECT_NAME}_glut ${EXTRA_LIBRARIES}
+                                             ${OpenCV_LIBRARIES}
+                                             ${OPENGL_LIBRARIES}
+                                             ${GLUT_LIBRARIES}
+                                             freeimage
+  )
+else()
+  # add an OSMesa version of the renderer
+  add_library(${PROJECT_NAME}_osmesa model.cpp
+                                     renderer.cpp
+                                     renderer_osmesa.cpp
+                                     ${EXTRA_SOURCES}
+  )
+
+  target_link_libraries(${PROJECT_NAME}_osmesa ${EXTRA_LIBRARIES}
+                                               ${OpenCV_LIBRARIES}
+                                               OSMesa GLU
+                                               freeimage
+  )
 endif()
 
-ADD_EXECUTABLE(view_generator main.cpp
-                              model.cpp
-                              ${EXTRA_SOURCES}
-)
+ADD_EXECUTABLE(view_generator main.cpp)
 
 SET_PROPERTY(TARGET view_generator PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
 
