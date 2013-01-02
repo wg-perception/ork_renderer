@@ -44,7 +44,6 @@
 
 #include <GL/gl.h>
 
-#include "model.h"
 
 using Eigen::Matrix4d;
 
@@ -64,6 +63,9 @@ normalize_vector(T & x, T&y, T&z)
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+class Model;
+class aiLogStream;
 
 /** Class that displays a scene ina Frame Buffer Object
  * Inspired by http://www.songho.ca/opengl/gl_fbo.html
@@ -119,12 +121,11 @@ protected:
   float angle_;
 
   Matrix4d matrix_;
-  Model model_;
+  Model* model_;
   GLuint scene_list_;
 
-  aiVector3D scene_min_, scene_max_, scene_center_;
   /** stream for storing the logs from Assimp */
-  aiLogStream ai_stream_;
+  aiLogStream* ai_stream_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,6 +159,18 @@ public:
 
   void
   render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out);
+
+  /**
+   * @return the rotation of the current view point
+   */
+  cv::Matx33d
+  R() const;
+
+  /**
+   * @return the translation of the current view point
+   */
+  cv::Vec3d
+  T() const;
 private:
   /** The number of points on the sphere */
   size_t n_points_;

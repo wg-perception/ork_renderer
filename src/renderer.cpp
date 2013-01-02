@@ -40,6 +40,8 @@
 
 #include <GL/gl.h>
 
+#include "model.h"
+
 Renderer::Renderer(const std::string & mesh_path)
     :
       mesh_path_(mesh_path),
@@ -50,13 +52,14 @@ Renderer::Renderer(const std::string & mesh_path)
       focal_length_y_(0),
       near_(0),
       far_(0),
+      model_(new Model()),
       scene_list_(0)
 {
   // get a handle to the predefined STDOUT log stream and attach
   // it to the logging system. It remains active for all further
   // calls to aiImportFile(Ex) and aiApplyPostProcessing.
-  ai_stream_ = aiGetPredefinedLogStream(aiDefaultLogStream_STDOUT, NULL);
-  aiAttachLogStream(&ai_stream_);
+  ai_stream_ = new aiLogStream(aiGetPredefinedLogStream(aiDefaultLogStream_STDOUT, NULL));
+  aiAttachLogStream(ai_stream_);
 }
 
 Renderer::~Renderer()
@@ -96,7 +99,7 @@ Renderer::set_parameters(size_t width, size_t height, double focal_length_x, dou
   // Initialize the OpenGL context
   set_parameters_low_level();
 
-  model_.LoadModel(mesh_path_);
+  model_->LoadModel(mesh_path_);
 
   // Initialize the environment
   glClearColor(0.f, 0.f, 0.f, 1.f);
@@ -139,7 +142,7 @@ Renderer::lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy,
 
   // scale the whole asset to fit into our view frustum
   aiVector3D scene_min, scene_max, scene_center;
-  model_.get_bounding_box(&scene_min, &scene_max);
+  model_->get_bounding_box(&scene_min, &scene_max);
   scene_center.x = (scene_min.x + scene_max.x) / 2.0f;
   scene_center.y = (scene_min.y + scene_max.y) / 2.0f;
   scene_center.z = (scene_min.z + scene_max.z) / 2.0f;
@@ -156,7 +159,7 @@ Renderer::lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy,
     // now begin at the root node of the imported data and traverse
     // the scenegraph by multiplying subsequent local transforms
     // together on GL's matrix stack.
-    model_.Draw();
+    model_->Draw();
     glEndList();
   }
 
@@ -170,9 +173,9 @@ void
 Renderer::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const
 {
   // Create images to copy the buffers to
-  cv::Mat_<cv::Vec3b> image(height_, width_);
+  cv::Mat_ < cv::Vec3b > image(height_, width_);
   cv::Mat_<float> depth(height_, width_);
-  cv::Mat_<uchar> mask = cv::Mat_<uchar>::zeros(cv::Size(width_, height_));
+  cv::Mat_ < uchar > mask = cv::Mat_ < uchar > ::zeros(cv::Size(width_, height_));
 
   glFlush();
 
@@ -320,4 +323,24 @@ RendererIterator::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_o
 
   renderer_->lookAt(x, y, z, x_new_up, y_new_up, z_new_up);
   renderer_->render(image_out, depth_out, mask_out);
+}
+
+/**
+ * @return the rotation of the current view point
+ */
+cv::Matx33d
+RendererIterator::R() const
+{
+  cv::Matx33d R;
+  return R;
+}
+
+/**
+ * @return the translation of the current view point
+ */
+cv::Vec3d
+RendererIterator::T() const
+{
+  cv::Vec3d T;
+  return T;
 }

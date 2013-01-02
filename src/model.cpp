@@ -27,7 +27,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <object_recognition_renderer/model.h>
+#include "model.h"
 
 Model::Model()
     :
