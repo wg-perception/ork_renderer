@@ -1,0 +1,30 @@
+<package>
+  <name>object_recognition_renderer</name>
+  <version>0.1.0</version>
+  <description>Code that generates random views of an object</description>
+  <author email="vrabaud@willowgarage.com">Vincent Rabaud</author>
+  <maintainer email="vrabaud@willowgarage.com">Vincent Rabaud</maintainer>
+  <license>BSD></license>
+
+  <url>http://ecto.willowgarage.com/recognition</url>
+
+  <build_depend>assimp</build_depend>
+  <build_depend>freeimage</build_depend>
+  <build_depend>glut</build_depend>
+  <build_depend>libdevil-dev</build_depend>
+  <build_depend>libxi-dev</build_depend>
+  <build_depend>libxmu-dev</build_depend>
+  <build_depend>opencv2</build_depend>
+  <build_depend>sdl</build_depend>
+
+  <run_depend>assimp</run_depend>
+  <run_depend>freeimage</run_depend>
+  <run_depend>glut</run_depend>
+  <run_depend>libdevil-dev</run_depend>
+  <run_depend>libxi-dev</run_depend>
+  <run_depend>libxmu-dev</run_depend>
+  <run_depend>opencv2</run_depend>
+  <run_depend>sdl</run_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
