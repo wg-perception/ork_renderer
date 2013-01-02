@@ -280,9 +280,57 @@ RendererIterator::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_o
   if (isDone())
     return;
 
-  unsigned int n_templates = ((angle_max_ - angle_min_) / angle_step_ + 1) * n_points_
-                             * ((radius_max_ - radius_min_) / radius_step_ + 1);
+  cv::Vec3d t, up;
+  view_params(t, up);
 
+  renderer_->lookAt(t(0), t(1), t(2), up(0), up(1), up(2));
+  renderer_->render(image_out, depth_out, mask_out);
+}
+
+/**
+ * @return the rotation of the mesh with respect to the current view point
+ */
+cv::Matx33d
+RendererIterator::R() const
+{
+  cv::Vec3d t, up;
+  view_params(t, up);
+
+  cv::Vec3d y = t.cross(up);
+  cv::Mat R_full = (cv::Mat_<double>(3, 3) << t(0), t(1), t(2), y(0), y(1), y(2), up(0), up(1), up(2));
+  cv::Matx33d R = R_full;
+
+  return R;
+}
+
+/**
+ * @return the translation of the mesh with respect to the current view point
+ */
+cv::Vec3d
+RendererIterator::T() const
+{
+  cv::Vec3d t, _up;
+  view_params(t, _up);
+
+  return -t;
+}
+
+/**
+ * @return the total number of templates that will be computed
+ */
+size_t
+RendererIterator::n_templates() const
+{
+  return ((angle_max_ - angle_min_) / angle_step_ + 1) * n_points_ * ((radius_max_ - radius_min_) / radius_step_ + 1);
+}
+
+/**
+ * @param T the translation vector
+ * @param up the up vector of the view point
+ */
+void
+RendererIterator::view_params(cv::Vec3d &T, cv::Vec3d &up) const
+{
   // from http://www.xsi-blog.com/archives/115
   static float inc = CV_PI * (3 - sqrt(5));
   static float off = 2.0 / float(n_points_);
@@ -292,8 +340,7 @@ RendererIterator::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_o
   float x = cos(phi) * r;
   float z = sin(phi) * r;
 
-  float lat = acos(z);
-  float lon;
+  float lat = acos(z), lon;
   if ((abs(sin(lat)) < 1e-5) || (abs(y / sin(lat)) > 1))
     lon = 0;
   else
@@ -321,26 +368,6 @@ RendererIterator::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_o
   float y_new_up = y_up * cos(angle_rad) + y_right * sin(angle_rad);
   float z_new_up = z_up * cos(angle_rad) + z_right * sin(angle_rad);
 
-  renderer_->lookAt(x, y, z, x_new_up, y_new_up, z_new_up);
-  renderer_->render(image_out, depth_out, mask_out);
-}
-
-/**
- * @return the rotation of the current view point
- */
-cv::Matx33d
-RendererIterator::R() const
-{
-  cv::Matx33d R;
-  return R;
-}
-
-/**
- * @return the translation of the current view point
- */
-cv::Vec3d
-RendererIterator::T() const
-{
-  cv::Vec3d T;
-  return T;
+  T = cv::Vec3d(x, y, z);
+  up = cv::Vec3d(x_new_up, y_new_up, z_new_up);
 }

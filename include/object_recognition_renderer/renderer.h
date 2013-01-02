@@ -44,7 +44,6 @@
 
 #include <GL/gl.h>
 
-
 using Eigen::Matrix4d;
 
 /** Function that normalizes a vector
@@ -161,17 +160,30 @@ public:
   render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out);
 
   /**
-   * @return the rotation of the current view point
+   * @return the rotation of the mesh with respect to the current view point
    */
   cv::Matx33d
   R() const;
 
   /**
-   * @return the translation of the current view point
+   * @return the translation of the mesh with respect to the current view point
    */
   cv::Vec3d
   T() const;
+
+  /**
+   * @return the total number of templates that will be computed
+   */
+  size_t
+  n_templates() const;
 private:
+  /**
+   * @param T the translation vector
+   * @param up the up vector of the view point
+   */
+  void
+  view_params(cv::Vec3d &T, cv::Vec3d &up) const;
+
   /** The number of points on the sphere */
   size_t n_points_;
   /** The index of the view point we are at now */
