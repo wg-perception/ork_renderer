@@ -9,8 +9,8 @@ catkin_package(INCLUDE_DIRS include
 )
 else()
 catkin_stack()
-catkin_project(object_recognition_reconstruction INCLUDE_DIRS include
-                                                 LIBRARIES ${PROJECT_NAME}_osmesa
+catkin_project(object_recognition_renderer INCLUDE_DIRS include
+                                           LIBRARIES ${PROJECT_NAME}_osmesa
 )
 endif()
 
