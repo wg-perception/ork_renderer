@@ -10,6 +10,7 @@
   <url>http://ecto.willowgarage.com/recognition</url>
   <build_depends>assimp</build_depends>
   <build_depends>catkin</build_depends>
+  <build_depends>eigen</build_depends>
   <build_depends>freeimage</build_depends>
   <build_depends>glut</build_depends>
   <build_depends>libxi-dev</build_depends>

@@ -9,6 +9,7 @@
   <url>http://ecto.willowgarage.com/recognition</url>
 
   <build_depend>assimp</build_depend>
+  <build_depend>eigen</build_depend>
   <build_depend>freeimage</build_depend>
   <build_depend>glut</build_depend>
   <build_depend>libdevil-dev</build_depend>
