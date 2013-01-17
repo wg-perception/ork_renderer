@@ -9,6 +9,7 @@
 
   <url>http://ecto.willowgarage.com/recognition</url>
   <build_depends>assimp</build_depends>
+  <build_depends>boost</build_depends>
   <build_depends>catkin</build_depends>
   <build_depends>eigen</build_depends>
   <build_depends>freeimage</build_depends>
@@ -20,6 +21,7 @@
   <build_depends>sdl</build_depends>
 
   <depends>assimp</depends>
+  <depends>boost</depends>
   <depends>freeimage</depends>
   <depends>glut</depends>
   <depends>libosmesa6-dev</depends>

@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 2.8.0)
 project(object_recognition_renderer)
 
+find_package(Boost REQUIRED)
 find_package(catkin REQUIRED)
 
 if (${catkin_VERSION} VERSION_GREATER "0.5.28")
 catkin_package(INCLUDE_DIRS include
+               DEPENDS Boost
                LIBRARIES ${PROJECT_NAME}_osmesa
 )
 else()
