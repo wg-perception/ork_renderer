@@ -23,13 +23,12 @@ add_subdirectory(src)
 
 if (ROS_FUERTE_FOUND)
 # install the include folder
-install(PROGRAMS ${PROJECT_SOURCE_DIR}/include/
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
         DESTINATION include/
 )
-endif()
-if (ROS_GROOVY_OR_ABOVE_FOUND)
+else()
 # install the include folder
-install(PROGRAMS ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 endif()
