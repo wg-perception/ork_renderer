@@ -26,7 +26,6 @@ else()
   aux_source_directory(./assimp/contrib/zlib EXTRA_SOURCES_zlib)
   aux_source_directory(./assimp/code EXTRA_SOURCES)
   set(EXTRA_SOURCES ${EXTRA_SOURCES} ${EXTRA_SOURCES_clipper} ${EXTRA_SOURCES_ConvertUTF} ${EXTRA_SOURCES_irrXML} ${EXTRA_SOURCES_poly2tri} ${EXTRA_SOURCES_poly2tri_sweep} ${EXTRA_SOURCES_unzip} ${EXTRA_SOURCES_zlib})
-  message(INFO ${EXTRA_SOURCES})
   set(EXTRA_LIBRARIES)
 endif()
 

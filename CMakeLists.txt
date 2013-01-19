@@ -21,14 +21,14 @@ include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
 
 add_subdirectory(src)
 
-if (ROS_FUERTE_FOUND)
-# install the include folder
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
-        DESTINATION include/
-)
-else()
+if (${catkin_VERSION} VERSION_GREATER "0.5.28")
 # install the include folder
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+else()
+# install the include folder
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+        DESTINATION include/
 )
 endif()
