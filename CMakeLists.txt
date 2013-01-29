@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8.0)
 project(object_recognition_renderer)
 
 find_package(Boost REQUIRED)
+find_package(OpenCV REQUIRED)
+
 find_package(catkin REQUIRED)
 
 if (${catkin_VERSION} VERSION_GREATER "0.5.28")
@@ -17,7 +19,10 @@ catkin_project(object_recognition_renderer INCLUDE_DIRS include
 endif()
 
 include_directories(include)
-include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS}
+                           ${catkin_INCLUDE_DIRS}
+                           ${OpenCV_INCLUDE_DIRS}
+)
 
 add_subdirectory(src)
 
