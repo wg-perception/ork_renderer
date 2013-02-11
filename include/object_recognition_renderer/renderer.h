@@ -189,7 +189,7 @@ private:
   /** The index of the view point we are at now */
   size_t index_;
   /** The renderer object containing the scene and that will render images */
-  cv::Ptr<Renderer> renderer_;
+  Renderer* renderer_;
   /** Values for the angle sampling in degrees */
   int angle_min_, angle_max_, angle_step_, angle_;
   /** Values for the scale sampling */
