@@ -1,7 +1,5 @@
 FIND_PACKAGE(OpenGL)
 
-set(DO_GLUT False)
-
 find_package(PkgConfig REQUIRED)
 find_package(ASSIMP QUIET)
 if (NOT ASSIMP_FOUND)
@@ -34,13 +32,15 @@ include_directories(BEFORE ${ASSIMP_INCLUDE_DIRS})
 
 find_package(OpenCV REQUIRED)
 
-INCLUDE_DIRECTORIES(SYSTEM ${GLUT_INCLUDE_DIR}
-                           ${OpenCV_INCLUDE_DIR}
+INCLUDE_DIRECTORIES(SYSTEM ${OpenCV_INCLUDE_DIR}
                            ${OPENGL_INCLUDE_DIR}
 )
 
-if (${DO_GLUT})
+if (${USE_GLUT})
   add_definitions(-DUSE_RENDERER_GLUT=1)
+
+  find_package(GLUT)
+  include_directories(SYSTEM ${GLUT_INCLUDE_DIR})
 
   # add a glut version of the renderer
   add_library(${PROJECT_NAME}_glut model.cpp
@@ -93,7 +93,7 @@ SET_PROPERTY(TARGET view_generator PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX
 
 TARGET_LINK_LIBRARIES(view_generator ${EXTRA_LIBRARIES})
 
-if (${DO_GLUT})
+if (${USE_GLUT})
   target_link_libraries(view_generator ${PROJECT_NAME}_glut)
 else()
   target_link_libraries(view_generator ${PROJECT_NAME}_osmesa)
