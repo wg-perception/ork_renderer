@@ -11,7 +11,6 @@
   <build_depends>assimp</build_depends>
   <build_depends>boost</build_depends>
   <build_depends>catkin</build_depends>
-  <build_depends>eigen</build_depends>
   <build_depends>freeimage</build_depends>
   <build_depends>glut</build_depends>
   <build_depends>libosmesa6-dev</build_depends>

@@ -33,9 +33,6 @@
  *
  */
 
-#include <iostream>
-#include <stdlib.h>
-
 #define GL_GLEXT_PROTOTYPES
 
 #include <GL/gl.h>

@@ -10,7 +10,6 @@
 
   <build_depend>assimp</build_depend>
   <build_depend>boost</build_depend>
-  <build_depend>eigen</build_depend>
   <build_depend>freeimage</build_depend>
   <build_depend>glut</build_depend>
   <build_depend>libdevil-dev</build_depend>

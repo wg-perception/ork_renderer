@@ -38,13 +38,9 @@
 
 #include <string>
 
-#include <eigen3/Eigen/Eigen>
-
 #include <opencv2/core/core.hpp>
 
 #include <GL/gl.h>
-
-using Eigen::Matrix4d;
 
 /** Function that normalizes a vector
  * @param x the x component of the vector
@@ -119,7 +115,6 @@ protected:
   double focal_length_x_, focal_length_y_, near_, far_;
   float angle_;
 
-  Matrix4d matrix_;
   Model* model_;
   GLuint scene_list_;
 

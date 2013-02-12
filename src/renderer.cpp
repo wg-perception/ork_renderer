@@ -83,17 +83,6 @@ Renderer::set_parameters(size_t width, size_t height, double focal_length_x, dou
   near_ = near;
   far_ = far;
 
-  /*  double f = focal_length_, w = image_width_, h = image_height_;
-
-   Matrix4d K;
-   K << f, 0, w / 2, 0, 0, f, h / 2, 0, 0, 0, 1, 0, 0, 0, 0, 1;
-
-   matrix_ << 2 * K(0, 0) / w, -2 * K(0, 1) / w, (w - 2 * K(0, 2)) / w, 0, 0, -2 * K(1, 1) / h, (h - 2 * K(1, 2)) / h, 0, 0, 0, (-far
-   - near)
-   / (far - near), -2
-   * far * near
-   / (far - near), 0, 0, -1, 0;*/
-
   clean_buffers();
 
   // Initialize the OpenGL context
