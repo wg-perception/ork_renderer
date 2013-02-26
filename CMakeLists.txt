@@ -40,6 +40,6 @@ add_subdirectory(src)
 
 # install the include folder
 install(FILES ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/renderer.h
-                ${PROJECT_NAME}_include_files
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/${PROJECT_NAME}/
+                ${${PROJECT_NAME}_include_files}
+        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/
 )
