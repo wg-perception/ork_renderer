@@ -70,9 +70,10 @@
 <p>This package contains a small library to generate random views around an object. The input is given through a mesh and
 views are generated according to certain boundaries (angles, scale, in-plane rotation). The outputs are
 <a class="reference external" href="http://opencv.org/">OpenCV</a> <tt class="docutils literal"><span class="pre">cv::Mat</span></tt> for depth, RGB and mask.</p>
-<p>Two versions exist: one based on GLUT and one on OSMesa. The first ones requires you have an OpenGL context and
-therefore a window manager. The second is pure software and is therefore the one to use if you want to run the code on
-an infrastructure without GUIS&#8217;s (e.g. on a cluster). It is slower though.</p>
+<p>Two versions exist: one based on <a class="reference external" href="http://www.opengl.org/resources/libraries/glut/">GLUT</a> and one on
+<a class="reference external" href="http://www.mesa3d.org/osmesa.html">OSMesa</a>. The first ones requires you have an OpenGL context and therefore a
+window manager. The second is pure software and is therefore the one to use if you want to run the code on an
+infrastructure without GUIS&#8217;s (e.g. on a cluster). It is slower though.</p>
 <p>By default, the GLUT one is compiled as OSMesa 9.0 seems to have a few problems these days.</p>
 </div>
 
