@@ -43,3 +43,6 @@ install(FILES ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/renderer.h
                 ${${PROJECT_NAME}_include_files}
         DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/
 )
+
+# add docs
+ecto_sphinx(${CMAKE_CURRENT_SOURCE_DIR}/doc/ doc)

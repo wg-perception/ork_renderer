@@ -1,37 +1,15 @@
-object_recognition_reconstruction: 3D Object Reconstruction
-===========================================================
+.. _renderer:
 
-``Reconstruction`` provides a utility to create a 3d reconstruction of an object. For now, it creates
-an approximate untextured mesh from captured data, that is good enough for grasping.
+Random view Generator
+#####################
 
-Command Line
-------------
+This package contains a small library to generate random views around an object. The input is given through a mesh and
+views are generated according to certain boundaries (angles, scale, in-plane rotation). The outputs are
+`OpenCV <http://opencv.org/>`_ ``cv::Mat`` for depth, RGB and mask.
 
-From the command line, you want to execute the following command to compute all meshes and commit them to the local DB:
+Two versions exist: one based on `GLUT <http://www.opengl.org/resources/libraries/glut/>`_ and one on
+`OSMesa <http://www.mesa3d.org/osmesa.html>`_. The first ones requires you have an OpenGL context and therefore a
+window manager. The second is pure software and is therefore the one to use if you want to run the code on an
+infrastructure without GUIS's (e.g. on a cluster). It is slower though.
 
-.. code-block:: sh
-
-    mesh_object --all --visualize --commit
-
-Or tune your parameters using the appropriate command line arguments:
-    
-.. program-output:: ../../apps/mesh_object --help
-    :prompt:
-    :in_srcdir:
-
-Web Interface
--------------
-
-Reconstruction also provides a web interface to visualize the different meshes. In your build folder, just run:
-
-.. code-block:: sh
-
-    make or_web_ui
-
-You can then visualize the meshes here: `http://localhost:5984/or_web_ui/_design/viewer/index.html <http://localhost:5984/or_web_ui/_design/viewer/index.html>`_
-
-Tips
-----
-
-To create a textured mesh from a colored point cloud in meshlab:
-http://www.youtube.com/watch?v=JzmODsVQV7w
+By default, the GLUT one is compiled as OSMesa 9.0 seems to have a few problems these days.
