@@ -45,4 +45,6 @@ install(FILES ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/renderer.h
 )
 
 # add docs
+if (COMMAND ecto_sphinx)
 ecto_sphinx(${CMAKE_CURRENT_SOURCE_DIR}/doc/ doc)
+endif()
