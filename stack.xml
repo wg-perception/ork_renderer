@@ -2,8 +2,8 @@
   <name>object_recognition_renderer</name>
   <version>0.1.11</version>
   <description>Code that generates random views of an object</description>
-  <author email="vrabaud@willowgarage.com">Vincent Rabaud</author>
-  <maintainer email="vrabaud@willowgarage.com">Vincent Rabaud</maintainer>
+  <author email="vincent.rabaud@gmail.com">Vincent Rabaud</author>
+  <maintainer email="vincent.rabaud@gmail.com">Vincent Rabaud</maintainer>
   <license>BSD</license>
   <copyright>Willow Garage</copyright>
 
