@@ -63,11 +63,13 @@ RendererGlut::set_parameters_low_level()
   int argc = 0;
   char **argv = 0;
 
-  // Create an OpenGL context
-  glutInit(&argc, argv);
+  // Start GLUT if it was not started before
+  if (glutGet(GLUT_ELAPSED_TIME) <= 0)
+    glutInit(&argc, argv);
+
   // By doing so, the window is not open
   glutInitDisplayMode(GLUT_DOUBLE);
-  glutCreateWindow("Assimp - Very simple OpenGL sample");
+  glutCreateWindow("Assimp renderer");
 
   // create a framebuffer object
   glGenFramebuffers(1, &fbo_id_);
