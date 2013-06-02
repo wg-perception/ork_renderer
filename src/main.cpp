@@ -47,6 +47,7 @@
 #else
 #include <object_recognition_renderer/renderer_osmesa.h>
 #endif
+#include <object_recognition_renderer/utils.h>
 
 int
 main(int argc, char **argv)
@@ -70,10 +71,14 @@ main(int argc, char **argv)
   cv::Mat image, depth, mask;
   for (size_t i = 0; !renderer_iterator.isDone(); ++i, ++renderer_iterator)
   {
+    try{
     renderer_iterator.render(image, depth, mask);
     cv::imwrite(boost::str(boost::format("depth_%05d.png") % (i)), depth);
     cv::imwrite(boost::str(boost::format("image_%05d.png") % (i)), image);
     cv::imwrite(boost::str(boost::format("mask_%05d.png") % (i)), mask);
+    }catch(...){
+
+    }
   }
 
   return 0;

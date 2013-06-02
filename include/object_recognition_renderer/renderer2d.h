@@ -1,7 +1,6 @@
 /*
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2012, Willow Garage, Inc.
  *  Copyright (c) 2013, Vincent Rabaud
  *  All rights reserved.
  *
@@ -34,54 +33,60 @@
  *
  */
 
-#ifndef ORK_RENDERER_RENDERER_H_
-#define ORK_RENDERER_RENDERER_H_
+#ifndef ORK_RENDERER_RENDERER2D_H_
+#define ORK_RENDERER_RENDERER2D_H_
 
 #include <string>
 
 #include <opencv2/core/core.hpp>
 
-#include <GL/gl.h>
+#include "renderer.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Base class to render a 3d or 2d scene under different view points
+/** Class that renders a planar scene under different view points
+ * This is an equivalent to the Render class butfor planar patterns
  */
-class Renderer
+class Renderer2d : public Renderer
 {
 public:
-  Renderer() {};
+  /**
+   * @param file_path the path of the image file
+   * @param scale the size of a pixel in real life (in meters)
+   */
+  Renderer2d(const std::string & file_path, float scale);
 
-  virtual
-  ~Renderer() {};
-
-  virtual void
-  set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y, double near,
-      double far) = 0;
+  void
+  set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y, double near, double far);
 
   /** Similar to the gluLookAt function
-   * @param x the x position of the eye point
+   * @param x the x position of the eye pointt
    * @param y the y position of the eye point
    * @param z the z position of the eye point
    * @param upx the x direction of the up vector
    * @param upy the y direction of the up vector
    * @param upz the z direction of the up vector
    */
-  virtual void
-  lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy, GLdouble upz) = 0;
+  void
+  lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy, GLdouble upz);
 
   /** Renders the content of the current OpenGL buffers to images
    * @param image_out the RGB image
    * @param depth_out the depth image
    * @param mask_out the mask image
    */
-  virtual void
-  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const = 0;
+  void
+  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const;
 
 protected:
+  /** Path of the mesh */
+  std::string mesh_path_;
+
   unsigned int width_, height_;
   double focal_length_x_, focal_length_y_, near_, far_;
   float angle_;
+
+  cv::Mat img_;
 };
 
-#endif /* ORK_RENDERER_RENDERER_H_ */
+#endif /* ORK_RENDERER_RENDERER2D_H_ */

@@ -40,7 +40,7 @@
  */
 RendererOSMesa::RendererOSMesa(const std::string & mesh_path)
     :
-      Renderer(mesh_path),
+      Renderer3d(mesh_path),
       ctx_(0),
       ctx_buffer_(0)
 {

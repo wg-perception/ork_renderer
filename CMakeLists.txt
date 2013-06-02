@@ -14,6 +14,8 @@ set(${PROJECT_NAME}_include_files ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/
 else()
 set(${PROJECT_NAME}_export_libs ${PROJECT_NAME}_osmesa)
 set(${PROJECT_NAME}_include_files ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/renderer_osmesa.h)
+set(CATKIN_PACKAGE_BIN_DESTINATION share/${PROJECT_NAME}/bin)
+set(CATKIN_PACKAGE_LIB_DESTINATION lib)
 endif()
 
 if (${catkin_VERSION} VERSION_GREATER "0.5.28")

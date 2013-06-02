@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Copyright (c) 2013, Vincent Rabaud
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,20 +34,20 @@
  *
  */
 
-#ifndef RENDERER_GLUT_H_
-#define RENDERER_GLUT_H_
+#ifndef ORK_RENDERER_RENDERER_GLUT_H_
+#define ORK_RENDERER_RENDERER_GLUT_H_
 
 // Make sure we define that so that we have FBO enabled
 #define GL_GLEXT_PROTOTYPES
 
-#include <object_recognition_renderer/renderer.h>
+#include "renderer3d.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Class that displays a scene in a Frame Buffer Object
  * Inspired by http://www.songho.ca/opengl/gl_fbo.html
  */
-class RendererGlut: public Renderer
+class RendererGlut: public Renderer3d
 {
 public:
   /**
@@ -54,7 +55,7 @@ public:
    */
   RendererGlut(const std::string & file_path)
       :
-        Renderer(file_path)
+        Renderer3d(file_path)
   {
   }
 
@@ -81,4 +82,4 @@ private:
   GLuint texture_id_;
 };
 
-#endif /* RENDERER_GLUT_H_ */
+#endif /* ORK_RENDERER_RENDERER_GLUT_H_ */

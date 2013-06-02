@@ -34,8 +34,8 @@
  *
  */
 
-#ifndef ORK_RENDERER_RENDERER_H_
-#define ORK_RENDERER_RENDERER_H_
+#ifndef ORK_RENDERER_RENDERER3D_H_
+#define ORK_RENDERER_RENDERER3D_H_
 
 #include <string>
 
@@ -43,45 +43,71 @@
 
 #include <GL/gl.h>
 
+#include "renderer.h"
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Base class to render a 3d or 2d scene under different view points
+class Model;
+class aiLogStream;
+
+/** Class that displays a scene in a Frame Buffer Object
+ * Inspired by http://www.songho.ca/opengl/gl_fbo.html
  */
-class Renderer
+class Renderer3d : public Renderer
 {
 public:
-  Renderer() {};
+  /**
+   * @param file_path the path of the mesh file
+   */
+  Renderer3d(const std::string & file_path);
 
   virtual
-  ~Renderer() {};
+  ~Renderer3d();
 
-  virtual void
-  set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y, double near,
-      double far) = 0;
+  void
+  set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y, double near, double far);
 
   /** Similar to the gluLookAt function
-   * @param x the x position of the eye point
+   * @param x the x position of the eye pointt
    * @param y the y position of the eye point
    * @param z the z position of the eye point
    * @param upx the x direction of the up vector
    * @param upy the y direction of the up vector
    * @param upz the z direction of the up vector
    */
-  virtual void
-  lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy, GLdouble upz) = 0;
+  void
+  lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy, GLdouble upz);
 
   /** Renders the content of the current OpenGL buffers to images
    * @param image_out the RGB image
    * @param depth_out the depth image
    * @param mask_out the mask image
    */
-  virtual void
-  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const = 0;
+  void
+  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const;
 
 protected:
+  virtual void
+  clean_buffers() = 0;
+
+  virtual void
+  set_parameters_low_level() = 0;
+
+  virtual void
+  bind_buffers() const = 0;
+
+  /** Path of the mesh */
+  std::string mesh_path_;
+
   unsigned int width_, height_;
   double focal_length_x_, focal_length_y_, near_, far_;
   float angle_;
+
+  Model* model_;
+  GLuint scene_list_;
+
+  /** stream for storing the logs from Assimp */
+  aiLogStream* ai_stream_;
 };
 
-#endif /* ORK_RENDERER_RENDERER_H_ */
+#endif /* ORK_RENDERER_RENDERER3D_H_ */

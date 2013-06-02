@@ -33,19 +33,19 @@
  *
  */
 
-#ifndef RENDERER_OSMESA_H_
-#define RENDERER_OSMESA_H_
+#ifndef ORK_RENDERER_RENDERER_OSMESA_H_
+#define ORK_RENDERER_RENDERER_OSMESA_H_
 
-#include "renderer.h"
+#include "renderer3d.h"
 
 #include <GL/osmesa.h>
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/** Class that displays a scene ina Frame Buffer Object
+/** Class that displays a scene in a Frame Buffer Object
  * Inspired by http://www.songho.ca/opengl/gl_fbo.html
  */
-class RendererOSMesa: public Renderer
+class RendererOSMesa: public Renderer3d
 {
 public:
   /**
