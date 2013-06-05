@@ -29,7 +29,9 @@ catkin_project(object_recognition_renderer INCLUDE_DIRS include
                                            LIBRARIES ${${PROJECT_NAME}_export_libs}
 )
 
+set(CATKIN_PACKAGE_BIN_DESTINATION share/${PROJECT_NAME}/bin)
 set(CATKIN_PACKAGE_INCLUDE_DESTINATION include/${PROJECT_NAME})
+set(CATKIN_PACKAGE_LIB_DESTINATION lib)
 endif()
 
 include_directories(include)
