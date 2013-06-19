@@ -162,9 +162,6 @@ Renderer3d::lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble up
   }
 
   glCallList(scene_list_);
-
-  cv::Mat image_out, depth_out, mask_out;
-  Renderer3d::render(image_out, depth_out, mask_out);
 }
 
 void
