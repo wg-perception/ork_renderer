@@ -3,6 +3,7 @@
  *
  *  Copyright (c) 2012, Willow Garage, Inc.
  *  Copyright (c) 2013, Vincent Rabaud
+ *  Copyright (c) 2013, Aldebaran Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -54,10 +55,6 @@ public:
 
   virtual
   ~Renderer() {};
-
-  virtual void
-  set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y, double near,
-      double far) = 0;
 
   /** Similar to the gluLookAt function
    * @param x the x position of the eye point

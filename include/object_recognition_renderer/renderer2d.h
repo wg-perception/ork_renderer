@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2013, Vincent Rabaud
+ *  Copyright (c) 2013, Aldebaran Robotics
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -38,8 +39,6 @@
 
 #include <string>
 
-#include <opencv2/core/core.hpp>
-
 #include "renderer.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,15 +51,18 @@ class Renderer2d : public Renderer
 public:
   /**
    * @param file_path the path of the image file
-   * @param scale the size of a pixel in real life (in meters)
+   * @param physical_width the size of the width in real life (in meters)
    */
-  Renderer2d(const std::string & file_path, float scale);
+  Renderer2d(const std::string & file_path, float physical_width);
+
+  ~Renderer2d();
 
   void
-  set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y, double near, double far);
+  set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y);
 
-  /** Similar to the gluLookAt function
-   * @param x the x position of the eye pointt
+  /** Similar to the gluLookAt function. The image is supposed to have X going right, Y going down and Z
+   * going away from the camera
+   * @param x the x position of the eye point
    * @param y the y position of the eye point
    * @param z the z position of the eye point
    * @param upx the x direction of the up vector
@@ -83,10 +85,16 @@ protected:
   std::string mesh_path_;
 
   unsigned int width_, height_;
-  double focal_length_x_, focal_length_y_, near_, far_;
-  float angle_;
+  double focal_length_x_, focal_length_y_;
+  float physical_width_;
 
-  cv::Mat img_;
+  cv::Mat_<cv::Vec3b> img_ori_;
+  cv::Mat_<uchar> mask_ori_;
+  cv::Mat_<cv::Vec3f> depth_ori_;
+  cv::Mat_<uchar> mask_;
+  cv::Matx33f K_;
+  cv::Matx33f R_;
+  cv::Vec3f T_;
 };
 
 #endif /* ORK_RENDERER_RENDERER2D_H_ */

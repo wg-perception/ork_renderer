@@ -1,6 +1,7 @@
 //
 // Copyright (c) 2012, Willow Garage, Inc.
 // Copyright (c), assimp OpenGL sample
+// Copyright (c) 2013, Aldebaran Robotics
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -48,38 +49,59 @@
 #include <object_recognition_renderer/renderer_osmesa.h>
 #endif
 #include <object_recognition_renderer/utils.h>
+#include <object_recognition_renderer/renderer2d.h>
 
-int
-main(int argc, char **argv)
-{
-  // Define the display
-  size_t width = 640, height = 480;
+void render3d(std::string file_name, size_t width, size_t height) {
+#if USE_RENDERER_GLUT
+  RendererGlut renderer = RendererGlut(file_name);
+#else
+  RendererOSMesa renderer = RendererOSMesa(file_name);
+#endif
+
   double near = 0.1, far = 1000;
   double focal_length_x = 525, focal_length_y = 525;
-
-  // the model name can be specified on the command line.
-#if USE_RENDERER_GLUT
-  RendererGlut renderer = RendererGlut(std::string(argv[1]));
-#else
-  RendererOSMesa renderer = RendererOSMesa(std::string(argv[1]));
-#endif
 
   renderer.set_parameters(width, height, focal_length_x, focal_length_y, near, far);
 
   RendererIterator renderer_iterator = RendererIterator(&renderer, 150);
 
   cv::Mat image, depth, mask;
-  for (size_t i = 0; !renderer_iterator.isDone(); ++i, ++renderer_iterator)
-  {
-    try{
-    renderer_iterator.render(image, depth, mask);
-    cv::imwrite(boost::str(boost::format("depth_%05d.png") % (i)), depth);
-    cv::imwrite(boost::str(boost::format("image_%05d.png") % (i)), image);
-    cv::imwrite(boost::str(boost::format("mask_%05d.png") % (i)), mask);
-    }catch(...){
+  for (size_t i = 0; !renderer_iterator.isDone(); ++i, ++renderer_iterator) {
+    try {
+      renderer_iterator.render(image, depth, mask);
+      cv::imwrite(boost::str(boost::format("depth_%05d.png") % (i)), depth);
+      cv::imwrite(boost::str(boost::format("image_%05d.png") % (i)), image);
+      cv::imwrite(boost::str(boost::format("mask_%05d.png") % (i)), mask);
+    } catch (...) {
 
     }
   }
+}
+
+void render2d(std::string file_name, size_t width, size_t height) {
+  Renderer2d render(file_name, 0.2);
+  double focal_length_x = 525, focal_length_y = 525;
+  render.set_parameters(width, height, focal_length_x, focal_length_y);
+  render.lookAt(0, 0, -0.5, 0, 0, -1);
+  cv::Mat img, depth, mask;
+  render.render(img, depth, mask);
+  cv::imshow("img", img);
+  cv::imshow("depth", depth);
+  cv::imshow("mask", mask);
+  cv::waitKey(0);
+}
+
+int main(int argc, char **argv) {
+  // Define the display
+  size_t width = 640, height = 480;
+
+  // the model name can be specified on the command line.
+  std::string file_name(argv[1]), file_ext = file_name.substr(file_name.size() - 3, file_name.npos);
+
+  if (file_ext == "png")
+    render2d(file_name, width, height);
+  else
+    render3d(file_name, width, height);
 
   return 0;
 }

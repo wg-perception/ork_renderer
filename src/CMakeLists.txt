@@ -27,7 +27,8 @@ else()
   set(EXTRA_LIBRARIES)
 endif()
 
-set(SOURCES model.cpp renderer3d.cpp utils.cpp)
+# create the rendering library
+set(SOURCES model.cpp renderer2d.cpp renderer3d.cpp utils.cpp)
 
 include_directories(BEFORE ${ASSIMP_INCLUDE_DIRS})
 
@@ -74,6 +75,7 @@ else()
   )
 endif()
 
+# add an executable to render views to a file
 ADD_EXECUTABLE(view_generator main.cpp)
 
 SET_PROPERTY(TARGET view_generator PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
