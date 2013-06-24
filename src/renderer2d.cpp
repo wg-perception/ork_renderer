@@ -52,8 +52,10 @@ Renderer2d::Renderer2d(const std::string & file_path, float physical_width) :
     channels[3].copyTo(mask_ori_);
     channels.resize(3);
     cv::merge(channels, img_ori_);
-  } else
-    mask_ori_ = cv::Mat_<uchar>::zeros(img_ori_.size());
+  } else {
+    mask_ori_.create(img_ori_.size());
+    mask_ori_.setTo(255);
+  }
 }
 
 Renderer2d::~Renderer2d() {
@@ -74,12 +76,14 @@ void Renderer2d::lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdoub
   cv::Vec3f T;
 
   // Update R_ and T_
-  T_ = cv::Vec3f(x,y,z);
+  T_ = cv::Vec3f(-x, -y, -z);
+  cv::Vec3f f = T_/norm(T_);
   cv::Vec3f up(upx, upy, upz);
-  cv::Vec3f vec = cv::Vec3f(0, -1, 0).cross(up);
-  float norm = cv::norm(vec);
-  vec *= std::asin(norm) / norm;
-  cv::Rodrigues(vec, R_);
+  up = up / norm(up);
+
+  cv::Vec3f s = f.cross(up);
+  cv::Vec3f u = s.cross(f);
+  R_ = cv::Matx33f(s[0], s[1], s[2], u[0], u[1], u[2], -f[0], -f[1], -f[2]);
 }
 
 void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const {
@@ -92,7 +96,7 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
   cv::Matx33f T_img = cv::Matx33f(s, 0, 0, 0, s, 0, 0, 0, 1);
 
   // Flip axes
-  T_img = cv::Matx33f(1, 0, 0, 0, -1, 0, 0, 0, -1) * T_img;
+  T_img = cv::Matx33f(-1, 0, 0, 0, -1, 0, 0, 0, 1) * T_img;
 
   // Apply the camera transform
   cv::Matx34f P = K_
@@ -105,8 +109,8 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
   // Define the image corners
   std::vector<cv::Vec2f> corners(4);
   corners[0] = cv::Vec2f(0, 0);
-  corners[1] = cv::Vec2f(physical_width_, 0);
-  corners[2] = cv::Vec2f(physical_width_, (img_ori_.rows * physical_width_) / img_ori_.cols);
+  corners[1] = cv::Vec2f(img_ori_.cols, 0);
+  corners[2] = cv::Vec2f(img_ori_.cols, img_ori_.rows );
   corners[3] = cv::Vec2f(0, corners[2][1]);
 
   // Project the image corners
@@ -114,7 +118,7 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
 
   std::vector<cv::Vec2f> corners_dst(4);
   for (size_t i = 0; i < corners.size(); ++i) {
-    cv::Vec3f res = T_img * cv::Vec3f(corners[i][0], corners[i][1], 0);
+    cv::Vec3f res = T_img * cv::Vec3f(corners[i][0], corners[i][1], 1);
     x_min = std::min(res[0] / res[2], x_min);
     y_min = std::min(res[1] / res[2], y_min);
   }
