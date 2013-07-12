@@ -84,6 +84,8 @@ void Renderer2d::lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdoub
   cv::Vec3f s = f.cross(up);
   cv::Vec3f u = s.cross(f);
   R_ = cv::Matx33f(s[0], s[1], s[2], u[0], u[1], u[2], -f[0], -f[1], -f[2]);
+  R_ = R_.t();
+  T_ = -R_*T_;
 }
 
 void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const {
@@ -93,24 +95,32 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
 
   // Scale the image properly
   float s = physical_width_ / img_ori_.cols;
-  cv::Matx33f T_img = cv::Matx33f(s, 0, 0, 0, s, 0, 0, 0, 1);
+  cv::Matx44f T_img_physical = cv::Matx44f(s,0,0,0, 0,s,0,0, 0,0,s,0, 0,0,0,1);
 
-  // Flip axes
-  T_img = cv::Matx33f(-1, 0, 0, 0, -1, 0, 0, 0, 1) * T_img;
+  // Flip axes and center at 0,0,0
+  float physical_height = img_ori_.rows * s;
+  T_img_physical = cv::Matx44f(1,0,0,-float(physical_width_) / 2, 0,1,0,float(physical_height) / 2, 0,0,1,0, 0,0,0,1) *
+      cv::Matx44f(1,0,0,0, 0,-1,0,0, 0,0,-1,0, 0,0,0,1) * T_img_physical;
+
+  // Define the perspective transform to apply to the image (z=0 so we can ignore the 3rd column of P)
+  cv::Matx34f P_noK = cv::Matx34f(R_(0, 0), R_(0, 1), R_(0, 2), T_(0), R_(1, 0), R_(1, 1), R_(1, 2), T_(1), R_(2, 0),
+      R_(2, 1), R_(2, 2), T_(2)) * T_img_physical;
+  cv::Matx33f T_to3d = cv::Matx33f(P_noK(0, 0), P_noK(0, 1), P_noK(0, 3), P_noK(1, 0), P_noK(1, 1), P_noK(1, 3),
+      P_noK(2, 0), P_noK(2, 1), P_noK(2, 3));
+
+  std::cout << T_to3d << R_ << T_ << std::endl;
 
   // Apply the camera transform
-  cv::Matx34f P = K_
-      * cv::Matx34f(R_(0, 0), R_(0, 1), R_(0, 2), T_(0), R_(1, 0), R_(1, 1), R_(1, 2), T_(1), R_(2, 0), R_(2, 1),
-          R_(2, 2), T_(2));
-  // Define the perspective transform to apply to the image (z=0 so we can ignore the 3rd column of P
-  T_img = cv::Matx33f(P(0, 0), P(0, 1), P(0, 3), P(1, 0), P(1, 1), P(1, 3), P(2, 0), P(2, 1), P(2, 3)) * T_img;
-  cv::Matx33f T_img_inv = T_img.inv();
+  cv::Matx33f T_img = K_ * T_to3d;
+
+  // And readapt to an OpenCV image
+  T_img = cv::Matx33f(1, 0, 0, 0, -1, 0, 0, 0, 1) * T_img;
 
   // Define the image corners
   std::vector<cv::Vec2f> corners(4);
   corners[0] = cv::Vec2f(0, 0);
   corners[1] = cv::Vec2f(img_ori_.cols, 0);
-  corners[2] = cv::Vec2f(img_ori_.cols, img_ori_.rows );
+  corners[2] = cv::Vec2f(img_ori_.cols, img_ori_.rows);
   corners[3] = cv::Vec2f(0, corners[2][1]);
 
   // Project the image corners
@@ -126,6 +136,11 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
   // Warp the mask
   cv::Size final_size(width_, height_);
   cv::Mat_<uchar> mask;
+  T_img = cv::Matx33f(1, 0, -x_min, 0, 1, -y_min, 0, 0, 1) * T_img;
+
+  // Compute the inverse
+  cv::Matx33f T_img_inv = T_img.inv();
+
   cv::warpPerspective(mask_ori_, mask, T_img, final_size, cv::INTER_NEAREST, cv::BORDER_CONSTANT, cv::Scalar(0));
 
   // Warp the image/depth
@@ -145,9 +160,9 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
       image(j, i) = img_ori_(j_ori, i_ori);
 
       // Figure out the 3d position of the point
-      cv::Vec3f pos = R_ * cv::Vec3f(i_ori, j_ori, 1) + T_;
+      cv::Vec3f pos = T_to3d * cv::Vec3f(i_ori, j_ori, 1);
       // Do not forget to re-scale in millimeters
-      depth(j, i) = pos[2]*1000;
+      depth(j, i) = -pos[2]*1000;
 
       // Figure the inclusive bounding box of the mask, just for performance reasons for later
       if (j > j_max)

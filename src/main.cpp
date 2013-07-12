@@ -82,7 +82,10 @@ void render2d(std::string file_name, size_t width, size_t height) {
   Renderer2d render(file_name, 0.2);
   double focal_length_x = 525, focal_length_y = 525;
   render.set_parameters(width, height, focal_length_x, focal_length_y);
-  render.lookAt(0, 0, 0.5, 0, 1, 0);
+  float y = 0., z = 1;
+  cv::Vec2f up(z, -y);
+  up = up / norm(up);
+  render.lookAt(0.5, y, z, 0, up(0), up(1));
   cv::Mat img, depth, mask;
   render.render(img, depth, mask);
   cv::imshow("img", img);
