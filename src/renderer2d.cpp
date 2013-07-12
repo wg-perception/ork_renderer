@@ -71,7 +71,7 @@ void Renderer2d::set_parameters(size_t width, size_t height, double focal_length
   K_ = cv::Matx33f(focal_length_x / 2, 0, width_ / 2, 0, focal_length_y / 2, height_ / 2, 0, 0, 1);
 }
 
-void Renderer2d::lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy, GLdouble upz) {
+void Renderer2d::lookAt(double x, double y, double z, double upx, double upy, double upz) {
   cv::Matx33f R;
   cv::Vec3f T;
 

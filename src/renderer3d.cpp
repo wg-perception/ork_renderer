@@ -127,7 +127,7 @@ Renderer3d::set_parameters(size_t width, size_t height, double focal_length_x, d
 }
 
 void
-Renderer3d::lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy, GLdouble upz)
+Renderer3d::lookAt(double x, double y, double z, double upx, double upy, double upz)
 {
   bind_buffers();
 

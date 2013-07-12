@@ -42,8 +42,6 @@
 
 #include <opencv2/core/core.hpp>
 
-#include <GL/gl.h>
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Base class to render a 3d or 2d scene under different view points
@@ -65,7 +63,7 @@ public:
    * @param upz the z direction of the up vector
    */
   virtual void
-  lookAt(GLdouble x, GLdouble y, GLdouble z, GLdouble upx, GLdouble upy, GLdouble upz) = 0;
+  lookAt(double x, double y, double z, double upx, double upy, double upz) = 0;
 
   /** Renders the content of the current OpenGL buffers to images
    * @param image_out the RGB image
