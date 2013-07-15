@@ -44,7 +44,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Class that renders a planar scene under different view points
- * This is an equivalent to the Render class butfor planar patterns
+ * This is an equivalent to the Render class but for planar patterns
  */
 class Renderer2d : public Renderer
 {
@@ -90,7 +90,6 @@ protected:
 
   cv::Mat_<cv::Vec3b> img_ori_;
   cv::Mat_<uchar> mask_ori_;
-  cv::Mat_<cv::Vec3f> depth_ori_;
   cv::Mat_<uchar> mask_;
   cv::Matx33f K_;
   cv::Matx33f R_;

@@ -27,8 +27,15 @@ else()
   set(EXTRA_LIBRARIES)
 endif()
 
-# create the rendering library
-set(SOURCES model.cpp renderer2d.cpp renderer3d.cpp utils.cpp)
+# create the 2d rendering library
+add_library(${PROJECT_NAME}_2d renderer2d.cpp)
+target_link_libraries(${PROJECT_NAME}_2d ${OpenCV_LIBRARIES})
+install(TARGETS ${PROJECT_NAME}_2d
+          DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
+
+# create the 3d rendering library
+set(SOURCES model.cpp renderer3d.cpp utils.cpp)
 
 include_directories(BEFORE ${ASSIMP_INCLUDE_DIRS})
 
@@ -87,6 +94,7 @@ if (${USE_GLUT})
 else()
   target_link_libraries(view_generator ${PROJECT_NAME}_osmesa)
 endif()
+target_link_libraries(view_generator ${PROJECT_NAME}_2d)
 
 SET_TARGET_PROPERTIES(view_generator PROPERTIES
                                      OUTPUT_NAME view_generator
@@ -95,3 +103,6 @@ SET_TARGET_PROPERTIES(view_generator PROPERTIES
 install(TARGETS view_generator
         DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
+
+# add some executables
+add_subdirectory(apps)
