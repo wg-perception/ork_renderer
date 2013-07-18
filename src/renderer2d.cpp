@@ -44,15 +44,16 @@
 Renderer2d::Renderer2d(const std::string & file_path, float physical_width) :
     mesh_path_(file_path), width_(640), height_(480), focal_length_x_(0), focal_length_y_(0), physical_width_(
         physical_width) {
-  img_ori_ = cv::imread(file_path);
-  if (img_ori_.channels() == 4) {
+  cv::Mat img_ori = cv::imread(file_path, CV_LOAD_IMAGE_UNCHANGED);
+  if (img_ori.channels() == 4) {
     // Get the alpha channel as the mask
     std::vector<cv::Mat> channels;
-    cv::split(img_ori_, channels);
+    cv::split(img_ori, channels);
     channels[3].copyTo(mask_ori_);
     channels.resize(3);
     cv::merge(channels, img_ori_);
   } else {
+    img_ori_ = img_ori;
     mask_ori_.create(img_ori_.size());
     mask_ori_.setTo(255);
   }
@@ -108,8 +109,6 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
   cv::Matx33f T_to3d = cv::Matx33f(P_noK(0, 0), P_noK(0, 1), P_noK(0, 3), P_noK(1, 0), P_noK(1, 1), P_noK(1, 3),
       P_noK(2, 0), P_noK(2, 1), P_noK(2, 3));
 
-  std::cout << T_to3d << R_ << T_ << std::endl;
-
   // Apply the camera transform
   cv::Matx33f T_img = K_ * T_to3d;
 
@@ -144,8 +143,8 @@ void Renderer2d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_ou
   cv::warpPerspective(mask_ori_, mask, T_img, final_size, cv::INTER_NEAREST, cv::BORDER_CONSTANT, cv::Scalar(0));
 
   // Warp the image/depth
-  cv::Mat_<cv::Vec3b> image(final_size);
-  cv::Mat_<unsigned short> depth(final_size);
+  cv::Mat_<cv::Vec3b> image = cv::Mat_<cv::Vec3b>::zeros(final_size);
+  cv::Mat_<unsigned short> depth = cv::Mat_<unsigned short>::zeros(final_size);
   cv::Mat_<uchar>::iterator mask_it = mask.begin(), mask_end = mask.end();
 
   unsigned int i_min = width_, i_max = 0, j_min = height_, j_max = 0;
