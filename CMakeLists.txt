@@ -18,21 +18,10 @@ set(CATKIN_PACKAGE_BIN_DESTINATION share/${PROJECT_NAME}/bin)
 set(CATKIN_PACKAGE_LIB_DESTINATION lib)
 endif()
 
-if (${catkin_VERSION} VERSION_GREATER "0.5.28")
 catkin_package(INCLUDE_DIRS include
                DEPENDS Boost
                LIBRARIES ${${PROJECT_NAME}_export_libs}
 )
-else()
-catkin_stack()
-catkin_project(object_recognition_renderer INCLUDE_DIRS include
-                                           LIBRARIES ${${PROJECT_NAME}_export_libs}
-)
-
-set(CATKIN_PACKAGE_BIN_DESTINATION share/${PROJECT_NAME}/bin)
-set(CATKIN_PACKAGE_INCLUDE_DESTINATION include/${PROJECT_NAME})
-set(CATKIN_PACKAGE_LIB_DESTINATION lib)
-endif()
 
 include_directories(include)
 include_directories(SYSTEM ${Boost_INCLUDE_DIRS}
