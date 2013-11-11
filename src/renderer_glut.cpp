@@ -64,8 +64,11 @@ RendererGlut::set_parameters_low_level()
   char **argv = 0;
 
   // Start GLUT if it was not started before
-  if (glutGet(GLUT_ELAPSED_TIME) <= 0)
+  //if (glutGet(GLUT_ELAPSED_TIME) <= 0)
+  if (!is_glut_initialized_) {
+    is_glut_initialized_ = true;
     glutInit(&argc, argv);
+  }
 
   // By doing so, the window is not open
   glutInitDisplayMode(GLUT_DOUBLE);

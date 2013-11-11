@@ -228,7 +228,13 @@ Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) co
     ++j_max;
   cv::Rect rect(i_min, j_min, i_max - i_min + 1, j_max - j_min + 1);
 
-  depth_scale(rect).copyTo(depth_out);
-  image(rect).copyTo(image_out);
-  mask(rect).copyTo(mask_out);
+  if ((rect.width <=0) || (rect.height <= 0)) {
+    depth_out = cv::Mat();
+    image_out = cv::Mat();
+    mask_out = cv::Mat();
+  } else {
+    depth_scale(rect).copyTo(depth_out);
+    image(rect).copyTo(image_out);
+    mask(rect).copyTo(mask_out);
+  }
 }
