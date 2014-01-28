@@ -33,8 +33,11 @@ add_subdirectory(src)
 
 # install the include folder
 install(FILES ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/renderer.h
-                ${${PROJECT_NAME}_include_files}
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/
+              ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/renderer2d.h
+              ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/renderer3d.h
+              ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME}/utils.h
+              ${${PROJECT_NAME}_include_files}
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}/
 )
 
 # add docs
