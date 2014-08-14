@@ -87,15 +87,18 @@ RendererIterator::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_o
 }
 
 /**
- * @return the rotation of the mesh with respect to the current view point
+ * @return the rotation of the camera with respect to the current view point
  */
+
 cv::Matx33d
 RendererIterator::R() const
 {
   cv::Vec3d t, up;
   view_params(t, up);
+  cv::Vec3d t_normal = cv::Vec3d(t(0), t(1), t(2));
+  normalize_vector(t_normal(0),t_normal(1),t_normal(2));
 
-  cv::Vec3d y = t.cross(up);
+  cv::Vec3d y = t_normal.cross(up);
   cv::Mat R_full = (cv::Mat_<double>(3, 3) << t(0), t(1), t(2), y(0), y(1), y(2), up(0), up(1), up(2));
   cv::Matx33d R = R_full;
 
@@ -103,7 +106,38 @@ RendererIterator::R() const
 }
 
 /**
- * @return the translation of the mesh with respect to the current view point
+ * @return the rotation of the mesh with respect to the current view point
+ */
+cv::Matx33d
+RendererIterator::R_obj() const
+{
+  cv::Vec3d t, up;
+  view_params(t, up, cv::Vec3d(1, 0, 0));
+  cv::Vec3d t_normal = cv::Vec3d(t(0), t(1), t(2));
+  normalize_vector(t_normal(0),t_normal(1),t_normal(2));
+
+  cv::Vec3d y = t_normal.cross(up);
+  normalize_vector(y(0),y(1),y(2));
+  normalize_vector(up(0),up(1),up(2));
+
+  cv::Mat R_full = (cv::Mat_<double>(3, 3) <<
+                    up(0), up(1), up(2),
+                    y(0), y(1), y(2),
+                    t(0), t(1), t(2)
+                    );
+  cv::Matx33d R = R_full;
+
+  return R;
+}
+
+float
+RendererIterator::D_obj() const
+{
+  return radius_;
+}
+
+/**
+ * @return the translation of the camera with respect to the current view point
  */
 cv::Vec3d
 RendererIterator::T() const
@@ -128,45 +162,36 @@ RendererIterator::n_templates() const
  * @param up the up vector of the view point
  */
 void
-RendererIterator::view_params(cv::Vec3d &T, cv::Vec3d &up) const
+RendererIterator::view_params(cv::Vec3d &T, cv::Vec3d &up, cv::Vec3d T_coincide) const
 {
   // from http://www.xsi-blog.com/archives/115
+  // Calculate Point(x, y ,z) on the sphere based on index_ and radius_ using Golden Spiral technique
   static float inc = CV_PI * (3 - sqrt(5));
   static float off = 2.0 / float(n_points_);
-  float y = index_ * off - 1 + (off / 2);
-  float r = sqrt(1 - y * y);
+  float z = index_ * off - 1 + (off / 2);
+  float r = sqrt(1 - z * z);
   float phi = index_ * inc;
-  float x = cos(phi) * r;
-  float z = sin(phi) * r;
-
-  float lat = acos(z), lon;
-  if ((abs(sin(lat)) < 1e-5) || (abs(y / sin(lat)) > 1))
-    lon = 0;
-  else
-    lon = asin(y / sin(lat));
+  float x = std::cos(phi) * r;
+  float y = sin(phi) * r;
 
   x *= radius_; // * cos(lon) * sin(lat);
   y *= radius_; //float y = radius * sin(lon) * sin(lat);
   z *= radius_; //float z = radius * cos(lat);
 
   // Figure out the up vector
-  float x_up = radius_ * cos(lon) * sin(lat - 1e-5) - x;
-  float y_up = radius_ * sin(lon) * sin(lat - 1e-5) - y;
-  float z_up = radius_ * cos(lat - 1e-5) - z;
-  normalize_vector(x_up, y_up, z_up);
+  T = cv::Vec3d(x, y, z);
+  cv::Vec3d T_(T);
+  normalize_vector(T_(0),T_(1),T_(2));
 
   // Figure out the third vector of the basis
-  float x_right = -y_up * z + z_up * y;
-  float y_right = x_up * z - z_up * x;
-  float z_right = -x_up * y + y_up * x;
-  normalize_vector(x_right, y_right, z_right);
+  //get the up vector from the forward vector and the global up_vector(0,0,1) (i.e. coincide with the Z axis)
+  cv::Vec3d T_right = T_.cross(T_coincide);
+  normalize_vector(T_right(0), T_right(1), T_right(2));
+
+  cv::Vec3d T_up = T_right.cross(T_);
+  normalize_vector(T_up(0), T_up(1), T_up(2));
 
   // Rotate the up vector in that basis
   float angle_rad = angle_ * CV_PI / 180.;
-  float x_new_up = x_up * cos(angle_rad) + x_right * sin(angle_rad);
-  float y_new_up = y_up * cos(angle_rad) + y_right * sin(angle_rad);
-  float z_new_up = z_up * cos(angle_rad) + z_right * sin(angle_rad);
-
-  T = cv::Vec3d(x, y, z);
-  up = cv::Vec3d(x_new_up, y_new_up, z_new_up);
+  up = T_up * std::cos(angle_rad) + T_right * std::sin(angle_rad);
 }

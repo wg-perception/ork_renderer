@@ -89,13 +89,25 @@ public:
   render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out);
 
   /**
-   * @return the rotation of the mesh with respect to the current view point
+   * @return the rotation of the camera with respect to the current view point
    */
   cv::Matx33d
   R() const;
 
   /**
-   * @return the translation of the mesh with respect to the current view point
+   * @return the rotation of the mesh with respect to the current view point
+   */
+  cv::Matx33d
+  R_obj() const;
+
+  /**
+   * @return the distance to the mesh center
+   */
+  float
+  D_obj() const;
+
+  /**
+   * @return the translation of the camera with respect to the current view point
    */
   cv::Vec3d
   T() const;
@@ -105,13 +117,6 @@ public:
    */
   size_t
   n_templates() const;
-private:
-  /**
-   * @param T the translation vector
-   * @param up the up vector of the view point
-   */
-  void
-  view_params(cv::Vec3d &T, cv::Vec3d &up) const;
 
   /** The number of points on the sphere */
   size_t n_points_;
@@ -123,6 +128,14 @@ private:
   int angle_min_, angle_max_, angle_step_, angle_;
   /** Values for the scale sampling */
   float radius_min_, radius_max_, radius_step_, radius_;
+
+private:
+  /**
+   * @param T the translation vector
+   * @param up the up vector of the view point
+   */
+  void
+  view_params(cv::Vec3d &T, cv::Vec3d &up, cv::Vec3d T_coincide=cv::Vec3d(0, 0, 1)) const;
 };
 
 #endif /* ORK_RENDERER_UTILS_H */
