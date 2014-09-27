@@ -8,7 +8,7 @@
 
   <url>http://ecto.willowgarage.com/recognition</url>
 
-  <build_depend>assimp</build_depend>
+  <build_depend>assimp-dev</build_depend>
   <build_depend>boost</build_depend>
   <build_depend>freeimage</build_depend>
   <build_depend>glut</build_depend>
