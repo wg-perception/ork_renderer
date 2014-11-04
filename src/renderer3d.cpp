@@ -42,6 +42,8 @@
 
 #include "model.h"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 Renderer3d::Renderer3d(const std::string & mesh_path)
     :
       mesh_path_(mesh_path),
@@ -165,7 +167,7 @@ Renderer3d::lookAt(double x, double y, double z, double upx, double upy, double 
 }
 
 void
-Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const
+Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect) const
 {
   // Create images to copy the buffers to
   cv::Mat_ < cv::Vec3b > image(height_, width_);
@@ -226,7 +228,7 @@ Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) co
     --j_min;
   if (j_max < height_ - 1)
     ++j_max;
-  cv::Rect rect(i_min, j_min, i_max - i_min + 1, j_max - j_min + 1);
+  rect = cv::Rect(i_min, j_min, i_max - i_min + 1, j_max - j_min + 1);
 
   if ((rect.width <=0) || (rect.height <= 0)) {
     depth_out = cv::Mat();
@@ -236,5 +238,95 @@ Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) co
     depth_scale(rect).copyTo(depth_out);
     image(rect).copyTo(image_out);
     mask(rect).copyTo(mask_out);
+  }
+}
+
+void
+Renderer3d::renderDepthOnly(cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect) const
+{
+  // Create images to copy the buffers to
+  cv::Mat_<float> depth(height_, width_);
+  cv::Mat_ < uchar > mask = cv::Mat_ < uchar > ::zeros(cv::Size(width_, height_));
+
+  glFlush();
+
+  // Get data from the OpenGL buffers
+  bind_buffers();
+
+  // Deal with the depth image
+  glReadBuffer(GL_DEPTH_ATTACHMENT);
+  glReadPixels(0, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth.ptr());
+
+  float zNear = near_, zFar = far_;
+  cv::Mat_<float>::iterator it = depth.begin(), end = depth.end();
+  float max_allowed_z = zFar * 0.99;
+
+  unsigned int i_min = width_, i_max = 0, j_min = height_, j_max = 0;
+  for (unsigned int j = 0; j < height_; ++j)
+    for (unsigned int i = 0; i < width_; ++i, ++it)
+    {
+      //need to undo the depth buffer mapping
+      //http://olivers.posterous.com/linear-depth-in-glsl-for-real
+      *it = 2 * zFar * zNear / (zFar + zNear - (zFar - zNear) * (2 * (*it) - 1));
+      if (*it > max_allowed_z)
+        *it = 0;
+      else
+      {
+        mask(j, i) = 255;
+        // Figure the inclusive bounding box of the mask
+        if (j > j_max)
+          j_max = j;
+        else if (j < j_min)
+          j_min = j;
+        if (i > i_max)
+          i_max = i;
+        else if (i < i_min)
+          i_min = i;
+      }
+    }
+
+  // Rescale the depth to be in millimeters
+  cv::Mat depth_scale(cv::Size(width_, height_), CV_16UC1);
+  depth.convertTo(depth_scale, CV_16UC1, 1e3);
+
+  // Crop the images, just so that they are smaller to write/read
+  if (i_min > 0)
+    --i_min;
+  if (i_max < width_ - 1)
+    ++i_max;
+  if (j_min > 0)
+    --j_min;
+  if (j_max < height_ - 1)
+    ++j_max;
+  rect = cv::Rect(i_min, j_min, i_max - i_min + 1, j_max - j_min + 1);
+
+  if ((rect.width <=0) || (rect.height <= 0)) {
+    depth_out = cv::Mat();
+    mask_out = cv::Mat();
+  } else {
+    depth_scale(rect).copyTo(depth_out);
+    mask(rect).copyTo(mask_out);
+  }
+}
+
+void
+Renderer3d::renderImageOnly(cv::Mat &image_out, const cv::Rect &rect) const
+{
+  // Create images to copy the buffers to
+  cv::Mat_ < cv::Vec3b > image(height_, width_);
+
+  glFlush();
+
+  // Get data from the OpenGL buffers
+  bind_buffers();
+
+  // Deal with the RGB image
+  glReadBuffer(GL_COLOR_ATTACHMENT0);
+  glReadPixels(0, 0, width_, height_, GL_BGR, GL_UNSIGNED_BYTE, image.ptr());
+
+  if ((rect.width <=0) || (rect.height <= 0)) {
+    image_out = cv::Mat();
+  } else {
+    image(rect).copyTo(image_out);
   }
 }

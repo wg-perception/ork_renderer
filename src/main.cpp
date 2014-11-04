@@ -65,10 +65,11 @@ void render3d(std::string file_name, size_t width, size_t height) {
 
   RendererIterator renderer_iterator = RendererIterator(&renderer, 150);
 
+  cv::Rect rect;
   cv::Mat image, depth, mask;
   for (size_t i = 0; !renderer_iterator.isDone(); ++i, ++renderer_iterator) {
     try {
-      renderer_iterator.render(image, depth, mask);
+      renderer_iterator.render(image, depth, mask, rect);
       cv::imwrite(boost::str(boost::format("depth_%05d.png") % (i)), depth);
       cv::imwrite(boost::str(boost::format("image_%05d.png") % (i)), image);
       cv::imwrite(boost::str(boost::format("mask_%05d.png") % (i)), mask);
@@ -87,7 +88,8 @@ void render2d(std::string file_name, size_t width, size_t height) {
   up = up / norm(up);
   render.lookAt(0.5, y, z, 0, up(0), up(1));
   cv::Mat img, depth, mask;
-  render.render(img, depth, mask);
+  cv::Rect rect;
+  render.render(img, depth, mask, rect);
   cv::imshow("img", img);
   cv::imshow("depth", depth);
   cv::imshow("mask", mask);
