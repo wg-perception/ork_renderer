@@ -78,8 +78,22 @@ public:
    * @param mask_out the mask image
    */
   void
-  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out) const;
+  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect_out) const;
 
+  /** Renders the depth image from the current OpenGL buffers
+   * @param depth_out the depth image
+   * @param mask_out the mask image
+   * @param rect_out the bounding box of the rendered image
+   */
+  void
+  renderDepthOnly(cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect_out) const;
+
+  /** Renders the RGB image from the current OpenGL buffers
+   * @param image_out the RGB image
+   * @param rect_out the bounding box of the rendered image
+   */
+  void
+  renderImageOnly(cv::Mat &image_out, const cv::Rect &rect_out) const;
 protected:
   /** Path of the mesh */
   std::string mesh_path_;

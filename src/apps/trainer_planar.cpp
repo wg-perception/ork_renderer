@@ -67,6 +67,7 @@ int main(int argc, char **argv) {
   // the model name can be specified on the command line.
   std::string file_name(argv[1]), file_ext = file_name.substr(file_name.size() - 3, file_name.npos);
 
+  cv::Rect rect;
   Renderer2d render(file_name, 0.14);
   double focal_length_x = 525, focal_length_y = 525;
   render.set_parameters(width, height, focal_length_x, focal_length_y);
@@ -89,7 +90,7 @@ int main(int argc, char **argv) {
           cv::Vec3f up_rotated = R * up;
           render.lookAt(0., y, z, up_rotated(0), up_rotated(1), up_rotated(2));
           cv::Mat img, depth, mask;
-          render.render(img, depth, mask);
+          render.render(img, depth, mask, rect);
 
           std::vector<cv::Mat> sources(1);
           sources[0] = img;

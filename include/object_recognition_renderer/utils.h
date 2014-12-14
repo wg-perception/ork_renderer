@@ -85,17 +85,65 @@ public:
     return (index_ >= n_points_);
   }
 
+  /** Renders the content of the current OpenGL buffers to images
+   * @param image_out the RGB image
+   * @param depth_out the depth image
+   * @param mask_out the mask image
+   * @param rect_out the bounding box of the rendered image
+   */
   void
-  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out);
+  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect_out);
+
+  /** Renders the content of the current OpenGL buffers to images
+   * @param image_out the RGB image
+   * @param depth_out the depth image
+   * @param mask_out the mask image
+   * @param rect_out the bounding box of the rendered image
+   * @param t the translation vector
+   * @param up the up vector of the view point
+   */
+  void
+  render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect_out, const cv::Vec3d &t, const cv::Vec3d &up);
+
+  /** Renders the depth image from the current OpenGL buffers
+   * @param depth_out the depth image
+   * @param mask_out the mask image
+   * @param rect_out the bounding box of the rendered image
+   * @param t the translation vector
+   * @param up the up vector of the view point
+   */
+  void
+  renderDepthOnly(cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect_out, const cv::Vec3d &t, const cv::Vec3d &up);
+
+  /** Renders the RGB image from the current OpenGL buffers
+   * @param image_out the RGB image
+   * @param rect_out the bounding box of the rendered image
+   * @param t the translation vector
+   * @param up the up vector of the view point
+   */
+  void
+  renderImageOnly(cv::Mat &image_out, const cv::Rect &rect_out, const cv::Vec3d &t, const cv::Vec3d &up);
 
   /**
-   * @return the rotation of the mesh with respect to the current view point
+   * @return the rotation of the camera with respect to the current view point
    */
   cv::Matx33d
   R() const;
 
   /**
-   * @return the translation of the mesh with respect to the current view point
+   * @return the rotation of the object with respect to the current view point
+   */
+  cv::Matx33d
+  R_obj() const;
+
+  /**
+   * @return the distance from the current camera position to the object origin
+   */
+  float
+  D_obj() const;
+
+  /**
+   * @return the translation of the camera with respect to the current view point
    */
   cv::Vec3d
   T() const;
@@ -105,13 +153,6 @@ public:
    */
   size_t
   n_templates() const;
-private:
-  /**
-   * @param T the translation vector
-   * @param up the up vector of the view point
-   */
-  void
-  view_params(cv::Vec3d &T, cv::Vec3d &up) const;
 
   /** The number of points on the sphere */
   size_t n_points_;
@@ -123,6 +164,14 @@ private:
   int angle_min_, angle_max_, angle_step_, angle_;
   /** Values for the scale sampling */
   float radius_min_, radius_max_, radius_step_, radius_;
+
+private:
+  /**
+   * @param T the translation vector
+   * @param up the up vector of the view point
+   */
+  void
+  view_params(cv::Vec3d &T, cv::Vec3d &up) const;
 };
 
 #endif /* ORK_RENDERER_UTILS_H */
