@@ -36,29 +36,28 @@
 #ifndef ORK_RENDERER_RENDERER_OSMESA_H_
 #define ORK_RENDERER_RENDERER_OSMESA_H_
 
-#include "renderer3d.h"
-
 #include <GL/osmesa.h>
+
+#include "renderer3d_impl_base.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /** Class that displays a scene in a Frame Buffer Object
  * Inspired by http://www.songho.ca/opengl/gl_fbo.html
  */
-class RendererOSMesa: public Renderer3d
+class Renderer3dImpl : public Renderer3dImplBase
 {
 public:
   /**
    * @param file_path the path of the mesh file
    */
-  RendererOSMesa(const std::string & mesh_path);
+  Renderer3dImpl(const std::string & mesh_path, int width, int height);
 
-  ~RendererOSMesa()
+  ~Renderer3dImpl()
   {
     clean_buffers();
   }
 
-private:
   virtual void
   clean_buffers();
 

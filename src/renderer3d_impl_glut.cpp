@@ -39,10 +39,16 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-#include <object_recognition_renderer/renderer_glut.h>
+#include "renderer3d_impl_glut.h"
+
+Renderer3dImpl::Renderer3dImpl(const std::string & file_path, int width, int height) :
+        Renderer3dImplBase(file_path, width, height),
+        is_glut_initialized_(false)
+{
+};
 
 void
-RendererGlut::clean_buffers()
+Renderer3dImpl::clean_buffers()
 {
   if (texture_id_)
     glDeleteTextures(1, &texture_id_);
@@ -58,7 +64,7 @@ RendererGlut::clean_buffers()
 }
 
 void
-RendererGlut::set_parameters_low_level()
+Renderer3dImpl::set_parameters_low_level()
 {
   int argc = 0;
   char **argv = 0;
@@ -92,7 +98,7 @@ RendererGlut::set_parameters_low_level()
 }
 
 void
-RendererGlut::bind_buffers() const
+Renderer3dImpl::bind_buffers() const
 {
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_id_);
   glBindRenderbuffer(GL_RENDERBUFFER, rbo_id_);

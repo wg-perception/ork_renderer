@@ -43,20 +43,12 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
-#if USE_RENDERER_GLUT
-#include <object_recognition_renderer/renderer_glut.h>
-#else
-#include <object_recognition_renderer/renderer_osmesa.h>
-#endif
+#include <object_recognition_renderer/renderer3d.h>
 #include <object_recognition_renderer/utils.h>
 #include <object_recognition_renderer/renderer2d.h>
 
 void render3d(std::string file_name, size_t width, size_t height) {
-#if USE_RENDERER_GLUT
-  RendererGlut renderer = RendererGlut(file_name);
-#else
-  RendererOSMesa renderer = RendererOSMesa(file_name);
-#endif
+  Renderer3d renderer = Renderer3d(file_name);
 
   double near = 0.1, far = 1000;
   double focal_length_x = 525, focal_length_y = 525;

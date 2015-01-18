@@ -41,7 +41,8 @@ include_directories(BEFORE ${ASSIMP_INCLUDE_DIRS})
 
 find_package(OpenCV REQUIRED)
 
-INCLUDE_DIRECTORIES(SYSTEM ${OpenCV_INCLUDE_DIR}
+INCLUDE_DIRECTORIES(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}
+                           ${OpenCV_INCLUDE_DIR}
                            ${OPENGL_INCLUDE_DIR}
 )
 
@@ -51,36 +52,23 @@ if (${USE_GLUT})
   find_package(GLUT)
   include_directories(SYSTEM ${GLUT_INCLUDE_DIR})
 
-  # add a glut version of the renderer
-  add_library(${PROJECT_NAME}_glut ${SOURCES}
-                                   renderer_glut.cpp
-                                   ${EXTRA_SOURCES}
-  )
-  target_link_libraries(${PROJECT_NAME}_glut ${EXTRA_LIBRARIES}
-                                             ${OpenCV_LIBRARIES}
-                                             ${OPENGL_LIBRARIES}
-                                             ${GLUT_LIBRARIES}
-                                             freeimage
-  )
-  install(TARGETS ${PROJECT_NAME}_glut
-          DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  )
+  set(EXTRA_SOURCES ${EXTRA_SOURCES} renderer3d_impl_glut.cpp)
+  set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES})
 else()
-  # add an OSMesa version of the renderer
-  add_library(${PROJECT_NAME}_osmesa ${SOURCES}
-                                     renderer_osmesa.cpp
-                                     ${EXTRA_SOURCES}
-  )
-
-  target_link_libraries(${PROJECT_NAME}_osmesa ${EXTRA_LIBRARIES}
-                                               ${OpenCV_LIBRARIES}
-                                               OSMesa GLU
-                                               freeimage
-  )
-  install(TARGETS ${PROJECT_NAME}_osmesa
-          DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-  )
+  set(EXTRA_SOURCES ${EXTRA_SOURCES} renderer3d_impl_osmesa.cpp)
+  set(EXTRA_LIBRARIES ${EXTRA_LIBRARIES} OSMesa GLU)
 endif()
+
+add_library(${PROJECT_NAME}_3d ${SOURCES} ${EXTRA_SOURCES})
+
+target_link_libraries(${PROJECT_NAME}_3d ${EXTRA_LIBRARIES}
+                                         ${OpenCV_LIBRARIES}
+                                         freeimage
+)
+
+install(TARGETS ${PROJECT_NAME}_3d
+        DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
 
 # add an executable to render views to a file
 ADD_EXECUTABLE(view_generator main.cpp)
@@ -89,11 +77,7 @@ SET_PROPERTY(TARGET view_generator PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX
 
 TARGET_LINK_LIBRARIES(view_generator ${EXTRA_LIBRARIES})
 
-if (${USE_GLUT})
-  target_link_libraries(view_generator ${PROJECT_NAME}_glut)
-else()
-  target_link_libraries(view_generator ${PROJECT_NAME}_osmesa)
-endif()
+target_link_libraries(view_generator ${PROJECT_NAME}_3d)
 target_link_libraries(view_generator ${PROJECT_NAME}_2d)
 
 SET_TARGET_PROPERTIES(view_generator PROPERTIES

@@ -2,6 +2,7 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2012, Willow Garage, Inc.
+ *  Copyright (c) 2013, Vincent Rabaud
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -33,42 +34,43 @@
  *
  */
 
-#include <object_recognition_renderer/renderer_osmesa.h>
+#ifndef ORK_RENDERER_RENDERER3D_IMPL_BASE_H_
+#define ORK_RENDERER_RENDERER3D_IMPL_BASE_H_
 
-/**
- * @param file_path the path of the mesh file
+#include <string>
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/** Class that displays a scene in a Frame Buffer Object
+ * Inspired by http://www.songho.ca/opengl/gl_fbo.html
  */
-RendererOSMesa::RendererOSMesa(const std::string & mesh_path)
-    :
-      Renderer3d(mesh_path),
-      ctx_(0),
-      ctx_buffer_(0)
+class Renderer3dImplBase
 {
-}
+public:
+  /**
+   * @param file_path the path of the mesh file
+   */
+  Renderer3dImplBase(const std::string & mesh_path, int width, int height) :
+    mesh_path_(mesh_path), width_(width), height_(height)
+  {}
 
-void
-RendererOSMesa::clean_buffers()
-{
-  if (ctx_)
-    OSMesaDestroyContext(ctx_);
+  virtual
+  ~Renderer3dImplBase()
+  {}
 
-  if (ctx_buffer_)
-  {
-    free(ctx_buffer_);
-    ctx_buffer_ = 0;
-  }
-}
+  virtual void
+  clean_buffers() = 0;
 
-void
-RendererOSMesa::set_parameters_low_level()
-{
-  ctx_ = OSMesaCreateContextExt(OSMESA_RGB, 32, 0, 0, NULL);
+  virtual void
+  set_parameters_low_level() = 0;
 
-  ctx_buffer_ = malloc(width_ * height_ * 3 * sizeof(GLubyte));
-  OSMesaMakeCurrent(ctx_, ctx_buffer_, GL_UNSIGNED_BYTE, width_, height_);
-}
+  virtual void
+  bind_buffers() const = 0;
 
-void
-RendererOSMesa::bind_buffers() const
-{
-}
+  /** Path of the mesh */
+  std::string mesh_path_;
+
+  int width_, height_;
+};
+
+#endif /* ORK_RENDERER_RENDERER3D_IMPL_BASE_H_ */

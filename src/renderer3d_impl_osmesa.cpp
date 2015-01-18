@@ -2,7 +2,6 @@
  * Software License Agreement (BSD License)
  *
  *  Copyright (c) 2012, Willow Garage, Inc.
- *  Copyright (c) 2013, Vincent Rabaud
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -34,55 +33,44 @@
  *
  */
 
-#ifndef ORK_RENDERER_RENDERER_GLUT_H_
-#define ORK_RENDERER_RENDERER_GLUT_H_
+#include "renderer3d_impl_osmesa.h"
 
-// Make sure we define that so that we have FBO enabled
-#define GL_GLEXT_PROTOTYPES
+#include <cstdlib>
 
-#include "renderer3d.h"
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/** Class that displays a scene in a Frame Buffer Object
- * Inspired by http://www.songho.ca/opengl/gl_fbo.html
+/**
+ * @param file_path the path of the mesh file
  */
-class RendererGlut: public Renderer3d
+Renderer3dImpl::Renderer3dImpl(const std::string & mesh_path, int width, int height)
+    :
+      Renderer3dImplBase(mesh_path, width, height),
+      ctx_(0),
+      ctx_buffer_(0)
 {
-public:
-  /**
-   * @param file_path the path of the mesh file
-   */
-  RendererGlut(const std::string & file_path)
-      :
-        Renderer3d(file_path),
-        is_glut_initialized_(false)
+}
+
+void
+Renderer3dImpl::clean_buffers()
+{
+  if (ctx_)
+    OSMesaDestroyContext(ctx_);
+
+  if (ctx_buffer_)
   {
+    free(ctx_buffer_);
+    ctx_buffer_ = 0;
   }
+}
 
-  ~RendererGlut()
-  {
-    clean_buffers();
-  }
+void
+Renderer3dImpl::set_parameters_low_level()
+{
+  ctx_ = OSMesaCreateContextExt(OSMESA_RGB, 32, 0, 0, NULL);
 
-private:
-  virtual void
-  clean_buffers();
+  ctx_buffer_ = malloc(width_ * height_ * 3 * sizeof(GLubyte));
+  OSMesaMakeCurrent(ctx_, ctx_buffer_, GL_UNSIGNED_BYTE, width_, height_);
+}
 
-  virtual void
-  set_parameters_low_level();
-
-  virtual void
-  bind_buffers() const;
-
-  /** States whether GLUT has been initialized or not */
-  bool is_glut_initialized_;
-  /** The frame buffer object used for offline rendering */
-  GLuint fbo_id_;
-  /** The render buffer object used for offline depth rendering */
-  GLuint rbo_id_;
-  /** The render buffer object used for offline image rendering */
-  GLuint texture_id_;
-};
-
-#endif /* ORK_RENDERER_RENDERER_GLUT_H_ */
+void
+Renderer3dImpl::bind_buffers() const
+{
+}

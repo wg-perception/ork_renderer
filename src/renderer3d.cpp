@@ -44,12 +44,16 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#if USE_GLUT
+#include "renderer3d_impl_glut.h"
+#else
+#include "renderer3d_impl_osmesa.h"
+#endif
+
 Renderer3d::Renderer3d(const std::string & mesh_path)
     :
-      mesh_path_(mesh_path),
+      renderer_(new Renderer3dImpl(mesh_path, 0, 0)),
       angle_(0),
-      width_(0),
-      height_(0),
       focal_length_x_(0),
       focal_length_y_(0),
       near_(0),
@@ -76,8 +80,8 @@ void
 Renderer3d::set_parameters(size_t width, size_t height, double focal_length_x, double focal_length_y, double near,
                          double far)
 {
-  width_ = width;
-  height_ = height;
+  renderer_->width_ = width;
+  renderer_->height_ = height;
 
   focal_length_x_ = focal_length_x;
   focal_length_y_ = focal_length_y;
@@ -85,10 +89,10 @@ Renderer3d::set_parameters(size_t width, size_t height, double focal_length_x, d
   near_ = near;
   far_ = far;
 
-  clean_buffers();
+  renderer_->clean_buffers();
 
   // Initialize the OpenGL context
-  set_parameters_low_level();
+  renderer_->set_parameters_low_level();
 
   model_->LoadModel(mesh_path_);
 
@@ -120,18 +124,18 @@ Renderer3d::set_parameters(size_t width, size_t height, double focal_length_x, d
 
   double fx = Renderer3d::focal_length_x_;
   double fy = Renderer3d::focal_length_y_;
-  double fovy = 2 * atan(0.5 * height_ / fy) * 180 / CV_PI;
-  double aspect = (width_ * fy) / (height_ * fx);
+  double fovy = 2 * atan(0.5 * renderer_->height_ / fy) * 180 / CV_PI;
+  double aspect = (renderer_->width_ * fy) / (renderer_->height_ * fx);
 
   // set perspective
   gluPerspective(fovy, aspect, near, far);
-  glViewport(0, 0, width_, height_);
+  glViewport(0, 0, renderer_->width_, renderer_->height_);
 }
 
 void
 Renderer3d::lookAt(double x, double y, double z, double upx, double upy, double upz)
 {
-  bind_buffers();
+  renderer_->bind_buffers();
 
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -170,30 +174,30 @@ void
 Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect) const
 {
   // Create images to copy the buffers to
-  cv::Mat_ < cv::Vec3b > image(height_, width_);
-  cv::Mat_<float> depth(height_, width_);
-  cv::Mat_ < uchar > mask = cv::Mat_ < uchar > ::zeros(cv::Size(width_, height_));
+  cv::Mat_ < cv::Vec3b > image(renderer_->height_, renderer_->width_);
+  cv::Mat_<float> depth(renderer_->height_, renderer_->width_);
+  cv::Mat_ < uchar > mask = cv::Mat_ < uchar > ::zeros(cv::Size(renderer_->width_, renderer_->height_));
 
   glFlush();
 
   // Get data from the depth/image buffers
-  bind_buffers();
+  renderer_->bind_buffers();
 
   // Deal with the RGB image
   glReadBuffer(GL_COLOR_ATTACHMENT0);
-  glReadPixels(0, 0, width_, height_, GL_BGR, GL_UNSIGNED_BYTE, image.ptr());
+  glReadPixels(0, 0, renderer_->width_, renderer_->height_, GL_BGR, GL_UNSIGNED_BYTE, image.ptr());
 
   // Deal with the depth image
   glReadBuffer(GL_DEPTH_ATTACHMENT);
-  glReadPixels(0, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth.ptr());
+  glReadPixels(0, 0, renderer_->width_, renderer_->height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth.ptr());
 
   float zNear = near_, zFar = far_;
   cv::Mat_<float>::iterator it = depth.begin(), end = depth.end();
   float max_allowed_z = zFar * 0.99;
 
-  unsigned int i_min = width_, i_max = 0, j_min = height_, j_max = 0;
-  for (unsigned int j = 0; j < height_; ++j)
-    for (unsigned int i = 0; i < width_; ++i, ++it)
+  unsigned int i_min = renderer_->width_, i_max = 0, j_min = renderer_->height_, j_max = 0;
+  for (unsigned int j = 0; j < renderer_->height_; ++j)
+    for (unsigned int i = 0; i < renderer_->width_; ++i, ++it)
     {
       //need to undo the depth buffer mapping
       //http://olivers.posterous.com/linear-depth-in-glsl-for-real
@@ -216,17 +220,17 @@ Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out, cv
     }
 
   // Rescale the depth to be in millimeters
-  cv::Mat depth_scale(cv::Size(width_, height_), CV_16UC1);
+  cv::Mat depth_scale(cv::Size(renderer_->width_, renderer_->height_), CV_16UC1);
   depth.convertTo(depth_scale, CV_16UC1, 1e3);
 
   // Crop the images, just so that they are smaller to write/read
   if (i_min > 0)
     --i_min;
-  if (i_max < width_ - 1)
+  if (i_max < renderer_->width_ - 1)
     ++i_max;
   if (j_min > 0)
     --j_min;
-  if (j_max < height_ - 1)
+  if (j_max < renderer_->height_ - 1)
     ++j_max;
   rect = cv::Rect(i_min, j_min, i_max - i_min + 1, j_max - j_min + 1);
 
@@ -245,25 +249,25 @@ void
 Renderer3d::renderDepthOnly(cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rect) const
 {
   // Create images to copy the buffers to
-  cv::Mat_<float> depth(height_, width_);
-  cv::Mat_ < uchar > mask = cv::Mat_ < uchar > ::zeros(cv::Size(width_, height_));
+  cv::Mat_<float> depth(renderer_->height_, renderer_->width_);
+  cv::Mat_ < uchar > mask = cv::Mat_ < uchar > ::zeros(cv::Size(renderer_->width_, renderer_->height_));
 
   glFlush();
 
   // Get data from the OpenGL buffers
-  bind_buffers();
+  renderer_->bind_buffers();
 
   // Deal with the depth image
   glReadBuffer(GL_DEPTH_ATTACHMENT);
-  glReadPixels(0, 0, width_, height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth.ptr());
+  glReadPixels(0, 0, renderer_->width_, renderer_->height_, GL_DEPTH_COMPONENT, GL_FLOAT, depth.ptr());
 
   float zNear = near_, zFar = far_;
   cv::Mat_<float>::iterator it = depth.begin(), end = depth.end();
   float max_allowed_z = zFar * 0.99;
 
-  unsigned int i_min = width_, i_max = 0, j_min = height_, j_max = 0;
-  for (unsigned int j = 0; j < height_; ++j)
-    for (unsigned int i = 0; i < width_; ++i, ++it)
+  unsigned int i_min = renderer_->width_, i_max = 0, j_min = renderer_->height_, j_max = 0;
+  for (unsigned int j = 0; j < renderer_->height_; ++j)
+    for (unsigned int i = 0; i < renderer_->width_; ++i, ++it)
     {
       //need to undo the depth buffer mapping
       //http://olivers.posterous.com/linear-depth-in-glsl-for-real
@@ -286,17 +290,17 @@ Renderer3d::renderDepthOnly(cv::Mat &depth_out, cv::Mat &mask_out, cv::Rect &rec
     }
 
   // Rescale the depth to be in millimeters
-  cv::Mat depth_scale(cv::Size(width_, height_), CV_16UC1);
+  cv::Mat depth_scale(cv::Size(renderer_->width_, renderer_->height_), CV_16UC1);
   depth.convertTo(depth_scale, CV_16UC1, 1e3);
 
   // Crop the images, just so that they are smaller to write/read
   if (i_min > 0)
     --i_min;
-  if (i_max < width_ - 1)
+  if (i_max < renderer_->width_ - 1)
     ++i_max;
   if (j_min > 0)
     --j_min;
-  if (j_max < height_ - 1)
+  if (j_max < renderer_->height_ - 1)
     ++j_max;
   rect = cv::Rect(i_min, j_min, i_max - i_min + 1, j_max - j_min + 1);
 
@@ -313,16 +317,16 @@ void
 Renderer3d::renderImageOnly(cv::Mat &image_out, const cv::Rect &rect) const
 {
   // Create images to copy the buffers to
-  cv::Mat_ < cv::Vec3b > image(height_, width_);
+  cv::Mat_ < cv::Vec3b > image(renderer_->height_, renderer_->width_);
 
   glFlush();
 
   // Get data from the OpenGL buffers
-  bind_buffers();
+  renderer_->bind_buffers();
 
   // Deal with the RGB image
   glReadBuffer(GL_COLOR_ATTACHMENT0);
-  glReadPixels(0, 0, width_, height_, GL_BGR, GL_UNSIGNED_BYTE, image.ptr());
+  glReadPixels(0, 0, renderer_->width_, renderer_->height_, GL_BGR, GL_UNSIGNED_BYTE, image.ptr());
 
   if ((rect.width <=0) || (rect.height <= 0)) {
     image_out = cv::Mat();
