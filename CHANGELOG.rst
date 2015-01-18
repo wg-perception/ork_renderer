@@ -1,5 +1,5 @@
-Forthcoming
------------
+0.2.1 (2015-01-18)
+------------------
 * use GLUT by default
 * clean extensions
 * compile on Indigo
