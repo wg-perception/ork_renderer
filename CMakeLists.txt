@@ -6,7 +6,7 @@ find_package(OpenCV REQUIRED)
 
 find_package(catkin REQUIRED)
 
-option(USE_GLUT "Use GLUT instead of OSMesa" ON)
+option(USE_GLUT "Use GLUT instead of OSMesa" OFF)
 
 if (${USE_GLUT})
 set(${PROJECT_NAME}_export_libs ${PROJECT_NAME}_glut)
