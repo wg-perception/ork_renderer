@@ -1,3 +1,10 @@
+Forthcoming
+-----------
+* fixed mesh path
+* use a pimpl to not let the user decide between GLUT or OSMesa
+* remove legacy CMake
+* Contributors: Vincent Rabaud, nlyubova
+
 0.2.1 (2015-01-18)
 ------------------
 * use GLUT by default
