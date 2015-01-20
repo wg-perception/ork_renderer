@@ -105,9 +105,6 @@ public:
   renderImageOnly(cv::Mat &image_out, const cv::Rect &rect_out) const;
 
 protected:
-  /** Path of the mesh */
-  std::string mesh_path_;
-
   double focal_length_x_, focal_length_y_, near_, far_;
   float angle_;
 

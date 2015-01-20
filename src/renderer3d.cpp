@@ -94,7 +94,7 @@ Renderer3d::set_parameters(size_t width, size_t height, double focal_length_x, d
   // Initialize the OpenGL context
   renderer_->set_parameters_low_level();
 
-  model_->LoadModel(mesh_path_);
+  model_->LoadModel(renderer_->mesh_path_);
 
   // Initialize the environment
   glClearColor(0.f, 0.f, 0.f, 1.f);
