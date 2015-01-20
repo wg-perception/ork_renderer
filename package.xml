@@ -1,6 +1,6 @@
 <package>
   <name>object_recognition_renderer</name>
-  <version>0.2.1</version>
+  <version>0.2.2</version>
   <description>Code that generates random views of an object</description>
   <author email="vincent.rabaud@gmail.com">Vincent Rabaud</author>
   <maintainer email="vincent.rabaud@gmail.com">Vincent Rabaud</maintainer>

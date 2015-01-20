@@ -1,5 +1,5 @@
-Forthcoming
------------
+0.2.2 (2015-01-20)
+------------------
 * fixed mesh path
 * use a pimpl to not let the user decide between GLUT or OSMesa
 * remove legacy CMake
