@@ -6,11 +6,13 @@ find_package(OpenCV REQUIRED)
 
 find_package(catkin REQUIRED)
 
-option(USE_GLUT "Use GLUT instead of OSMesa" OFF)
+find_package(GLUT QUIET)
 
-if (${USE_GLUT})
-find_package(GLUT)
-set(${PROJECT_NAME}_depends GLUT)
+if (${GLUT_FOUND})
+  message(STATUS "Using GLUT")
+  add_definitions(-DUSE_GLUT=1)
+  set(USE_GLUT TRUE)
+  set(${PROJECT_NAME}_depends GLUT)
 endif()
 
 catkin_package(INCLUDE_DIRS include
