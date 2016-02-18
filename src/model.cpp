@@ -76,14 +76,14 @@ Model::recursiveTextureLoad(const struct aiScene *sc, const aiNode* nd)
 
       // See if another mesh is already using this texture, if so, just copy GLuint instead of remaking entire texture
       bool newTextureToBeLoaded = true;
-      for (int x = 0; x < texturesAndPaths.size(); x++)
+      for(std::map<std::pair<const aiNode*, int>, TextureAndPath>::iterator it = texturesAndPaths.begin(); it != texturesAndPaths.end(); ++it)
       {
-        if (texturesAndPaths[x].pathName == *str)
+        if(it->second.pathName == *str)
         {
           TextureAndPath reusedTexture;
-          reusedTexture.hTexture = texturesAndPaths[x].hTexture;
+          reusedTexture.hTexture = it->second.hTexture;
           reusedTexture.pathName = *str;
-          texturesAndPaths.push_back(reusedTexture);
+          texturesAndPaths[std::make_pair(nd, n)] = reusedTexture;
           newTextureToBeLoaded = false;
 
           std::cout << "Texture reused." << std::endl;
@@ -130,7 +130,7 @@ Model::recursiveTextureLoad(const struct aiScene *sc, const aiNode* nd)
 
         std::cout << "texture loaded." << std::endl;
 
-        texturesAndPaths.push_back(newTexture);
+        texturesAndPaths[std::make_pair(nd, n)] = newTexture;
       }
     }
   }
@@ -199,10 +199,11 @@ Model::recursive_render(const struct aiScene *sc, const aiNode* nd) const
   // draw all meshes assigned to this node
   for (; n < nd->mNumMeshes; ++n)
   {
+    glEnable(GL_TEXTURE_2D);
     const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
     if (n < texturesAndPaths.size())
-      glBindTexture(GL_TEXTURE_2D, texturesAndPaths[n].hTexture);
+      glBindTexture(GL_TEXTURE_2D, texturesAndPaths.at(std::make_pair(nd, n)).hTexture);
 
     apply_material(sc->mMaterials[mesh->mMaterialIndex]);
 
