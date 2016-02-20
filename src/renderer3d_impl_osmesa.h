@@ -67,6 +67,9 @@ public:
   virtual void
   bind_buffers() const;
 
+  virtual void
+  get_buffers(int width, int height, void* rgb, void* depth) const;
+  
   /** Off-Screen mesa context for pure software rendering */
   OSMesaContext ctx_;
   /** The RGBA buffer when doing software rendering */

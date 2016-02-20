@@ -67,6 +67,9 @@ public:
   virtual void
   bind_buffers() const = 0;
 
+  virtual void
+  get_buffers(int width, int height, void* rgb, void* depth) const = 0;
+
   /** Path of the mesh */
   std::string mesh_path_;
 

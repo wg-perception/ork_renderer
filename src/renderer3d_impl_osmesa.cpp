@@ -36,6 +36,7 @@
 #include "renderer3d_impl_osmesa.h"
 
 #include <cstdlib>
+#include <cstring>
 
 /**
  * @param file_path the path of the mesh file
@@ -51,8 +52,10 @@ Renderer3dImpl::Renderer3dImpl(const std::string & mesh_path, int width, int hei
 void
 Renderer3dImpl::clean_buffers()
 {
-  if (ctx_)
+  if (ctx_) {
     OSMesaDestroyContext(ctx_);
+    ctx_ = 0;
+  }
 
   if (ctx_buffer_)
   {
@@ -64,7 +67,7 @@ Renderer3dImpl::clean_buffers()
 void
 Renderer3dImpl::set_parameters_low_level()
 {
-  ctx_ = OSMesaCreateContextExt(OSMESA_RGB, 32, 0, 0, NULL);
+  ctx_ = OSMesaCreateContextExt(OSMESA_RGB, 16, 0, 0, NULL);
 
   ctx_buffer_ = malloc(width_ * height_ * 3 * sizeof(GLubyte));
   OSMesaMakeCurrent(ctx_, ctx_buffer_, GL_UNSIGNED_BYTE, width_, height_);
@@ -73,4 +76,23 @@ Renderer3dImpl::set_parameters_low_level()
 void
 Renderer3dImpl::bind_buffers() const
 {
+}
+
+void
+Renderer3dImpl::get_buffers(int width, int height, void* rgb, void* depth) const
+{
+  GLint tmp_width;
+  GLint tmp_height;
+  GLint tmp_format;
+  void* tmp;
+
+  if (rgb) {
+    OSMesaGetColorBuffer( ctx_, &tmp_width, &tmp_height, &tmp_format, &tmp );
+    std::memcpy(rgb, tmp, tmp_width*tmp_height*tmp_format);
+  }
+
+  if (depth) {
+    OSMesaGetDepthBuffer( ctx_, &tmp_width, &tmp_height, &tmp_format, &tmp );
+    std::memcpy(depth, tmp, tmp_width*tmp_height*tmp_format);
+  }
 }

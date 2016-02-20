@@ -183,6 +183,9 @@ Renderer3d::render(cv::Mat &image_out, cv::Mat &depth_out, cv::Mat &mask_out, cv
   // Get data from the depth/image buffers
   renderer_->bind_buffers();
 
+  // Get data from the depth/image buffers
+  //renderer_->get_buffers(renderer_->width_, renderer_->height_, image.ptr(), depth.ptr());
+
   // Deal with the RGB image
   glReadBuffer(GL_COLOR_ATTACHMENT0);
   glReadPixels(0, 0, renderer_->width_, renderer_->height_, GL_BGR, GL_UNSIGNED_BYTE, image.ptr());

@@ -67,7 +67,7 @@ public:
   set_parameters_low_level();
 
   virtual void
-  bind_buffers() const;
+  bind_buffers(int width, int height, void* rgb, void* depth) const;
 
   /** The frame buffer object used for offline rendering */
   GLuint fbo_id_;

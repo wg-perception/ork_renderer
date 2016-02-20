@@ -102,3 +102,18 @@ Renderer3dImpl::bind_buffers() const
   glBindFramebuffer(GL_FRAMEBUFFER, fbo_id_);
   glBindRenderbuffer(GL_RENDERBUFFER, rbo_id_);
 }
+
+void
+Renderer3dImpl::get_buffers(int width, int height, void* rgb, void* depth) const
+  // Deal with the RGB image
+  if (image) {
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, image);
+  }
+
+  // Deal with the depth image
+  if (depth) {
+    glReadBuffer(GL_DEPTH_ATTACHMENT);
+    glReadPixels(0, 0, width, height, GL_DEPTH_COMPONENT, GL_FLOAT, depth);
+  }
+}
