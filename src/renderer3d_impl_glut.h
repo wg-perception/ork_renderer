@@ -69,8 +69,6 @@ public:
   virtual void
   bind_buffers() const;
 
-  /** States whether GLUT has been initialized or not */
-  bool is_glut_initialized_;
   /** The frame buffer object used for offline rendering */
   GLuint fbo_id_;
   /** The render buffer object used for offline depth rendering */
