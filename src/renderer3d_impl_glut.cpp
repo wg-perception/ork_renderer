@@ -38,12 +38,12 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#include <GL/freeglut_ext.h>
 
 #include "renderer3d_impl_glut.h"
 
 Renderer3dImpl::Renderer3dImpl(const std::string & file_path, int width, int height) :
-        Renderer3dImplBase(file_path, width, height),
-        is_glut_initialized_(false)
+        Renderer3dImplBase(file_path, width, height)
 {
 };
 
@@ -69,12 +69,11 @@ Renderer3dImpl::set_parameters_low_level()
   int argc = 0;
   char **argv = 0;
 
-  // Start GLUT if it was not started before
-  //if (glutGet(GLUT_ELAPSED_TIME) <= 0)
-  if (!is_glut_initialized_) {
-    is_glut_initialized_ = true;
-    glutInit(&argc, argv);
-  }
+  // Make sure glut is down
+  glutExit();
+  
+  // Initialize glut
+  glutInit(&argc, argv);
 
   // By doing so, the window is not open
   glutInitDisplayMode(GLUT_DOUBLE);
