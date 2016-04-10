@@ -33,13 +33,13 @@
  *
  */
 
-#include <iostream>
-
 #include <object_recognition_renderer/renderer2d.h>
 
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+#include <limits>
 
 Renderer2d::Renderer2d(const std::string & file_path, float physical_width) :
     mesh_path_(file_path), width_(640), height_(480), focal_length_x_(0), focal_length_y_(0), physical_width_(
