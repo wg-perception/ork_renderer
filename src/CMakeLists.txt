@@ -3,8 +3,6 @@ FIND_PACKAGE(OpenGL)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(ASSIMP assimp_devel REQUIRED)
 
-message(INFO ${ASSIMP_INCLUDE_DIRS} ${ASSIMP_INCLUDE_DIR})
-
 # create the 2d rendering library
 add_library(${PROJECT_NAME}_2d renderer2d.cpp)
 target_link_libraries(${PROJECT_NAME}_2d ${OpenCV_LIBRARIES})
@@ -19,9 +17,11 @@ find_package(OpenCV REQUIRED)
 
 INCLUDE_DIRECTORIES(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}
                            ${ASSIMP_INCLUDE_DIRS}
+                           ${ASSIMP_INCLUDE_DIRS}/..
                            ${OpenCV_INCLUDE_DIR}
                            ${OPENGL_INCLUDE_DIR}
 )
+link_directories(${ASSIMP_LIBRARY_DIRS})
 
 if (${USE_GLUT})
   add_definitions(-DUSE_RENDERER_GLUT=1)
@@ -37,7 +37,6 @@ else()
 endif()
 
 add_library(${PROJECT_NAME}_3d ${SOURCES} ${EXTRA_SOURCES})
-link_directories(${ASSIMP_LIBRARY_DIRS})
 target_link_libraries(${PROJECT_NAME}_3d ${EXTRA_LIBRARIES}
                                          ${OpenCV_LIBRARIES}
                                          ${ASSIMP_LIBRARIES}
