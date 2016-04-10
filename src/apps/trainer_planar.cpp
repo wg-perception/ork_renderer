@@ -36,7 +36,12 @@
 
 #include <opencv2/calib3d/calib3d.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#if OPENCV_MAJOR_VERSION == 2
 #include <opencv2/objdetect/objdetect.hpp>
+#else
+#include <opencv2/rgbd/linemod.hpp>
+#endif
 
 #include <object_recognition_renderer/utils.h>
 #include <object_recognition_renderer/renderer2d.h>
