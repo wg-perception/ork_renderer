@@ -104,11 +104,11 @@ Renderer3dImpl::bind_buffers() const
 }
 
 void
-Renderer3dImpl::get_buffers(int width, int height, void* rgb, void* depth) const
+Renderer3dImpl::get_buffers(int width, int height, void* rgb, void* depth) const {
   // Deal with the RGB image
-  if (image) {
+  if (rgb) {
     glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, image);
+    glReadPixels(0, 0, width, height, GL_BGR, GL_UNSIGNED_BYTE, rgb);
   }
 
   // Deal with the depth image

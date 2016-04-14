@@ -69,6 +69,9 @@ public:
   virtual void
   bind_buffers() const;
 
+  virtual void
+  get_buffers(int width, int height, void* rgb, void* depth) const;
+
   /** The frame buffer object used for offline rendering */
   GLuint fbo_id_;
   /** The render buffer object used for offline depth rendering */
