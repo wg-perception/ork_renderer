@@ -47,6 +47,14 @@ void
 Model::LoadModel(const std::string & file_path)
 {
   scene = aiImportFile(file_path.c_str(), aiProcessPreset_TargetRealtime_Quality);
+  for (unsigned int i=0; i<scene->mNumMeshes; i++){
+    for (unsigned int j=0; j<scene->mMeshes[i]->mNumVertices; j++){
+      scene->mMeshes[i]->mVertices[j].x *= -1;
+      scene->mMeshes[i]->mVertices[j].y *= -1;
+      scene->mMeshes[i]->mVertices[j].z *= -1;
+    }
+  }
+
   recursiveTextureLoad(scene, scene->mRootNode);
 }
 
