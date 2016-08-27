@@ -1,12 +1,13 @@
 FIND_PACKAGE(OpenGL)
 
 find_package(PkgConfig REQUIRED)
-find_package(assimp QUIET)
+pkg_check_modules(ASSIMP assimp_devel REQUIRED)
 if(ASSIMP_INCLUDE_DIRS)
-  add_definitions(-DUSE_ASSIMP_DEVEL=0)
-else()
-  pkg_check_modules(ASSIMP assimp_devel REQUIRED)
   add_definitions(-DUSE_ASSIMP_DEVEL=1)
+message(INFO ${ASSIMP_INCLUDE_DIRS})
+else()
+  find_package(assimp)
+  add_definitions(-DUSE_ASSIMP_DEVEL=0)
 endif()
 
 # create the 2d rendering library
@@ -23,6 +24,7 @@ find_package(OpenCV REQUIRED)
 
 INCLUDE_DIRECTORIES(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR}
                            ${ASSIMP_INCLUDE_DIRS}
+                           ${ASSIMP_INCLUDE_DIRS}/../
                            ${OpenCV_INCLUDE_DIR}
                            ${OPENGL_INCLUDE_DIR}
 )
