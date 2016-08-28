@@ -1,7 +1,7 @@
 FIND_PACKAGE(OpenGL)
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(ASSIMP assimp_devel REQUIRED)
+pkg_check_modules(ASSIMP assimp_devel)
 if(ASSIMP_INCLUDE_DIRS)
   add_definitions(-DUSE_ASSIMP_DEVEL=1)
 message(INFO ${ASSIMP_INCLUDE_DIRS})
