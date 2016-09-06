@@ -2,13 +2,6 @@ FIND_PACKAGE(OpenGL)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(ASSIMP assimp-dev)
-if(ASSIMP_INCLUDE_DIRS)
-  add_definitions(-DUSE_ASSIMP_DEVEL=1)
-message(INFO ${ASSIMP_INCLUDE_DIRS})
-else()
-  find_package(assimp)
-  add_definitions(-DUSE_ASSIMP_DEVEL=0)
-endif()
 
 # create the 2d rendering library
 add_library(${PROJECT_NAME}_2d renderer2d.cpp)
