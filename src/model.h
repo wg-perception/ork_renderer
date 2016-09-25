@@ -45,6 +45,7 @@
 
 #include <FreeImage.h>
 #include <vector>
+#include <map>
 
 #include <iostream>
 
@@ -60,7 +61,7 @@ struct TextureAndPath
 class Model
 {
 private:
-  std::vector<TextureAndPath> texturesAndPaths;
+  std::map<std::pair<const aiNode*, int>, TextureAndPath> texturesAndPaths;
   const struct aiScene* scene;
 
   void
