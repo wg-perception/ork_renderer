@@ -3,7 +3,7 @@ ADD_EXECUTABLE(trainer_planar trainer_planar.cpp)
 
 SET_PROPERTY(TARGET trainer_planar PROPERTY DEBUG_POSTFIX ${ASSIMP_DEBUG_POSTFIX})
 
-TARGET_LINK_LIBRARIES(trainer_planar ${PROJECT_NAME}_2d)
+TARGET_LINK_LIBRARIES(trainer_planar ${PROJECT_NAME}_2d ${OpenCV_LIBRARIES})
 
 SET_TARGET_PROPERTIES(trainer_planar PROPERTIES
                                      OUTPUT_NAME trainer_planar
